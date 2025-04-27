@@ -1,0 +1,344 @@
+import React, { useContext, useState, useEffect } from "react";
+import { Box, Button, Stack, Typography } from "@mui/material";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+
+
+import Categories from './FilterSidebar';
+import { GlobalContext } from "../../contexto_global/useContextGlobal";
+
+
+
+const ProductDetails = () => {
+  const {
+    adicionarNovoItem,
+    favoriteItem,
+
+    adicionarNovosItenfavoritos,
+  } = useContext(GlobalContext);
+
+  const [produtos, setProdutos] = useState([]);
+
+  useEffect(() => {
+    // Verifica se a chave "iphone" existe antes de filtrá-la
+    const categoriasDisponiveis = Object.keys(Categories).filter(
+      (c) => c !== "iphone" && Categories[c]
+    );
+    
+    if (categoriasDisponiveis.length === 0) {
+      return; // Caso não haja categorias disponíveis, não faz nada
+    }
+  
+    // Seleciona uma categoria aleatória
+    const sugestaoAleatoria =
+      categoriasDisponiveis[Math.floor(Math.random() * categoriasDisponiveis.length)];
+  
+    // Atualiza o estado com os produtos da categoria escolhida
+    setProdutos(Categories[sugestaoAleatoria]);
+  }, [Categories]);  // Adiciona `categories` como dependência para re-executar quando mudar
+  
+  return (
+    <>
+      <Stack
+        sx={{
+          width: "100%",
+          textAlign: "center",
+          marginTop: "6rem",
+        }}
+      >
+        <Stack
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            placeItems: "center",
+          }}
+        >
+          <Stack sx={{ display: "block" }}>
+            <Box sx={{ display: "flex", placeItems: "center" }}>
+              <Box
+                sx={{
+                  height: "4rem",
+                  width: "1.5rem",
+                  marginRight: "1.5rem",
+
+                  backgroundColor: "#33bf30",
+                  borderRadius: "20px",
+                }}
+              ></Box>
+              <Typography sx={{ fontWeight: "600", fontSize: "1.2rem" }}>
+                Todos os Eletrônicos
+              </Typography>
+            </Box>
+
+            <Typography
+              variant="h1"
+              sx={(theme) => ({
+                color: "#33bf30",
+                fontSize: "2rem",
+                fontWeight: "600",
+                lineHeight: "1.3",
+                textAlign: "left",
+                marginBottom: "3rem",
+                [theme.breakpoints.down(800)]: {
+                  fontSize: "1.2rem",
+                  fontWeight: "700",
+                },
+              })}
+            >
+              Explorar os mais vendidos
+            </Typography>
+          </Stack>
+
+          <Stack
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              gap: "10px",
+            }}
+          >
+            <Button
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                background: "rgb(237, 237, 237)",
+                borderRadius: "50%",
+                height: "60px",
+                width: "50px",
+                boxShadow: "0 2px 15px rgba(15, 1, 1, 0.1)",
+                minWidth: "unset", // Garante que o botão não se expanda demais
+              }}
+            >
+              <ArrowBackIosNewIcon sx={{ color: "rgb(51, 191, 48)" }} />
+            </Button>
+            <Button
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                background: "rgb(237, 237, 237)",
+                borderRadius: "50%",
+                height: "60px",
+                width: "50px",
+                boxShadow: "0 2px 15px rgba(71, 71, 71, 0.1)",
+                minWidth: "unset",
+              }}
+            >
+              <ArrowForwardIosIcon sx={{ color: "rgb(51, 191, 48)" }} />
+            </Button>
+          </Stack>
+        </Stack>
+
+        <Stack
+          sx={{
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            // background: "#8de0e7",
+            padding: "20px",
+            "@media screen and (max-width: 700px)": {
+              padding: "1px",
+              gap: "1.7rem",
+            },
+          }}
+        >
+          <Stack
+            sx={(theme) => ({
+              display: "grid",
+              justifyContent: "center",
+              textAlign: "center",
+              gridTemplateColumns: "repeat(5, 1fr)",
+              gap: "2rem",
+              maxWidth: "1700px",
+              width: "100%",
+              margin: "0 auto",
+              padding: "0 1rem",
+
+              [theme.breakpoints.down(1500)]: {
+                gridTemplateColumns: "repeat(4, 1fr)",
+                gap: "1.7rem",
+              },
+              [theme.breakpoints.down(1050)]: {
+                gridTemplateColumns: "repeat(3, 1fr)",
+                gap: "1.5rem",
+              },
+              [theme.breakpoints.down(750)]: {
+                gridTemplateColumns: "repeat(2, 1fr)",
+                gap: "1.3rem",
+                placeItems: "center",
+              },
+              [theme.breakpoints.down(550)]: {
+                gridTemplateColumns: "repeat(2, 1fr)",
+                gap: "1.2rem",
+                placeItems: "center",
+
+                margin: "0 auto",
+                padding: "0.10rem",
+              },
+              [theme.breakpoints.down(400)]: {
+                gridTemplateColumns: "1fr",
+                placeItems: "center",
+                gap: "1.5rem",
+                margin: "0 auto",
+                padding: "0.30rem",
+              },
+            })}
+          >
+            {produtos.map((item, index) => (
+              <Box
+                key={index}
+                sx={(theme) => ({
+                  background:
+                    "linear-gradient(135deg, rgba(138, 137, 137, 0.1), rgba(133, 128, 128, 0.43))",
+                  border: "1px solid rgba(255, 255, 255, 0.2)",
+                  backdropFilter: "blur(20px)",
+                  WebkitBackdropFilter: "blur(20px)",
+                  borderRadius: "10px",
+                  textAlign: "center",
+                  overflow: "hidden",
+                  boxShadow: "0 0 30px rgba(71, 71, 71, 0.1)",
+                  maxWidth: "300px",
+                  width: "100%",
+                  height: "auto",
+                  transition: "0.8s ease-in-out",
+                  "&:hover": {
+                    transform: "scale(1.05)",
+                  },
+                  [theme.breakpoints.down(800)]: {
+                    maxWidth: "98%",
+                  },
+                  [theme.breakpoints.down(600)]: {
+                    maxWidth: "100%",
+                  },
+                  [theme.breakpoints.down(400)]: {
+                    maxWidth: "100%",
+                    width: "100%",
+                  },
+                })}
+              >
+                <Box
+                  sx={(theme) => ({
+                    background:
+                      "linear-gradient(135deg, rgba(138, 137, 137, 0.1), rgba(133, 128, 128, 0.43))",
+                    backdropFilter: "blur(20px)",
+                    WebkitBackdropFilter: "blur(20px)",
+                    position: "relative",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    padding: "20px",
+                    height: "200px",
+                    [theme.breakpoints.down("sm")]: {
+                      padding: "5px",
+                      height: "150px",
+                    },
+                    [theme.breakpoints.down(400)]: {
+                      padding: "10px",
+                      height: "280px",
+                    },
+                  })}
+                >
+                  <img
+                    style={{
+                      maxWidth: "100%",
+                      maxHeight: "100%",
+                      objectFit: "contain",
+                    }}
+                    src={item.imageOne}
+                    alt={item.title}
+                  />
+                  <Button
+                    onClick={() => adicionarNovosItenfavoritos(item)}
+                    sx={{
+                      background: "transparent",
+                      border: "1px solid rgba(255, 255, 255, 0.2)",
+                      borderRadius: "50%",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      padding: "5px",
+                      minWidth: "32px",
+                      minHeight: "32px",
+                      cursor: "pointer",
+                      position: "absolute",
+                      top: "8px",
+                      right: "8px",
+                      zIndex: "10",
+                      backdropFilter: "blur(5px)",
+                      transition: "all 0.3s ease-in-out",
+                      "&:hover": {
+                        background: "rgba(255, 255, 255, 0.1)",
+                      },
+                    }}
+                  >
+                    {favoriteItem.some((fav) => fav.id === item.id) ? (
+                      <FavoriteIcon
+                        sx={{ fontSize: "1.2rem", color: "#33bf30" }}
+                      />
+                    ) : (
+                      <FavoriteBorderIcon
+                        sx={{ fontSize: "1.2rem", color: "#33bf30" }}
+                      />
+                    )}
+                  </Button>
+                </Box>
+                <Box
+                  sx={{
+                    textAlign: "left",
+                    padding: "10px",
+                    fontSize: "16px",
+                    fontWeight: "500",
+                    marginTop: "10px",
+                  }}
+                >
+                  <h2
+                    style={{
+                      color: "#fff",
+                      fontWeight: "600",
+                      fontSize: "1rem",
+                      marginBottom: "8px",
+                    }}
+                  >
+                    {item.title}
+                  </h2>
+                  <Typography
+                    sx={{
+                      color: "#33bf30",
+                      fontSize: "18px",
+                      fontWeight: "400",
+                      marginBottom: "8px",
+                    }}
+                  >
+                    R$ {item.price}
+                  </Typography>
+                  <Button
+                    sx={{
+                      color: "white",
+                      height: "2.5rem",
+                      width: "7rem",
+                      borderRadius: "5px",
+                      fontSize: "12px",
+                      cursor: "pointer",
+                      background: "#33bf30",
+                      outline: "none",
+                      border: "none",
+                    }}
+                    onClick={() => adicionarNovoItem(item)}
+                  >
+                    Comprar
+                  </Button>
+                </Box>
+              </Box>
+            ))}
+          </Stack>
+        </Stack>
+      </Stack>
+    </>
+  );
+};
+
+export default ProductDetails;
