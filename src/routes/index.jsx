@@ -6,6 +6,7 @@ import { MyHome } from "../pages/home";
 import { MainLayout } from "../layouts/mylayouts";
 import { MyFooter } from "../footer/footerBx";
 import ContactForm from "../contact/ContactForm";
+import AlmadaWhiwaSana from "../companyStory/CompanyHistory";
 
 
 
@@ -22,8 +23,8 @@ const MainRoutes = () => {
       <Routes>
        
         <Route path="/" element={<MyHome />} />
-        <Route path="/" element={<MyFooter />} />
-        <Route path="/" element={<ContactForm/>} />
+        
+        <Route  path="/AlmadaWhiwaSana" element={<AlmadaWhiwaSana/>}/>
         
       </Routes>
 

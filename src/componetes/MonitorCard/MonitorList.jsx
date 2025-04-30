@@ -9,7 +9,7 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import Categories from './FilterSidebar';
 import { GlobalContext } from "../../contexto_global/useContextGlobal";
 
-
+// WhiwaSana
 
 const ProductDetails = () => {
   const {
