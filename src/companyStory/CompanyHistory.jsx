@@ -7,6 +7,7 @@ import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import MasonryImageList from "./meetTheTeam";
 import minhaImagem from "../imagens/fpimag.png";
 import CycleInfoMUIIcon from "./CycleInfoMUI";
+import MissionVisionCard from "./MissionVision";
 
 const AlmadaWhiwaSana = () => {
   return (
@@ -361,14 +362,29 @@ const AlmadaWhiwaSana = () => {
             </Stack>
           </Stack>
 
+
+          
+
           <Box
             sx={{
               width: "100%",
               height: "auto",
               marginTop: "3rem",
+           
             }}
           >
             <CycleInfoMUIIcon />
+          </Box>
+
+          <Box
+            sx={{
+              width: "100%",
+              height: "auto",
+              marginTop: "3rem",
+            
+            }}
+          >
+            <MissionVisionCard />
           </Box>
         </Stack>
       </Stack>
