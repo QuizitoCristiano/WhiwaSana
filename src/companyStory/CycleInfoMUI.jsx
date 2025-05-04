@@ -51,7 +51,14 @@ export default function CycleInfoResponsive() {
         height: { xs: 280, sm: 360, md: 480 },
         margin: "auto",
         borderRadius: "50%",
-        bgcolor: "#f9f9f9",
+        // bgcolor: "#f9f9f9",
+
+        background:
+        "linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05))",
+      border: "1px solid rgba(255, 255, 255, 0.3)",
+      boxShadow: "0 10px 40px rgba(176, 176, 176, 0.2)",
+      backdropFilter: "blur(20px)",
+      WebkitBackdropFilter: "blur(20px)",
    
       
       }}
@@ -88,7 +95,8 @@ export default function CycleInfoResponsive() {
               mt: 1,
               display: "block",
               fontSize: { xs: "0.65rem", sm: "0.75rem" },
-              color: '#33bf30'
+              color: '#33bf30',
+              fontWeight: 600,
             }}
           >
             {key}
@@ -111,7 +119,7 @@ export default function CycleInfoResponsive() {
           variant="body1"
           sx={{
             fontSize: { xs: "0.9rem", sm: "1rem", md: "1.1rem" },
-            color: "#333",
+            color: "#f9f9f9",
           }}
         >
           {data[selected].text}

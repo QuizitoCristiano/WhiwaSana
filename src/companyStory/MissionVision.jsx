@@ -3,7 +3,10 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Box, Stack, Typography, Modal, Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 
-
+import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import GavelIcon from '@mui/icons-material/Gavel';
+import HandshakeIcon from '@mui/icons-material/Handshake';
 
 const style = {
     position: "absolute",
@@ -28,47 +31,45 @@ const style = {
 
 
 
-const MyArryGalleryItems = [
-  {
-    icons: [AddIcon], // 5 estrelas cheias
-    title: "Nossa Missão com você. ",
-    textp: `Oferecer tecnologia de qualidade com preços justos,
-     atendimento humanizado e 
-    foco total na experiência do cliente.
-      `,
-  },
-  {
-    icons: [AddIcon],
-    title: "A nossa Visão.",
-    textp: `Lorem ipsum dolor sit amet consectetur adipisicing elit.
-       Consectetur libero modi vel numquam error unde! Ullam, omnis facere?
-      `,
-  },
-  {
-    icons: [AddIcon],
-    title: "Nossos Valores.",
-    textp: `
-    Compromisso com o cliente
 
-    Transparência
-
-     Qualidade em tudo
-
-     Inovação constante
-
-     Respeito e responsabilidade
-      `,
-  },
-  {
-    icons: [AddIcon],
-    title: "Nosso Compromisso com Você.",
-    textp: `Cada produto enviado carrega nosso compromisso com a sua satisfação.
-     Trabalhamos com responsabilidade para garantir que sua compra chegue com 
-     qualidade, segurança e total suporte. Aqui, o pós-venda importa tanto quanto 
-     a primeira visita ao nosso site
-      `,
-  },
-];
+  
+  const MyArryGalleryItems = [
+    {
+      icons: [VolunteerActivismIcon ],
+      title: "Nossa Missão com você.",
+      preview: "Tecnologia acessível com alma e propósito.",
+      textp: `Oferecer tecnologia de qualidade com preços justos,
+      atendimento humanizado e 
+      foco total na experiência do cliente.`,
+    },
+    {
+      icons: [VisibilityIcon ],
+      title: "A nossa Visão.",
+      preview: "Ser a marca que você confia, recomenda e volta sempre.",
+      textp: `Ser referência nacional em eletrônicos,
+      reconhecida por confiança, inovação e acessibilidade.`,
+    },
+    {
+      icons: [GavelIcon ],
+      title: "Nossos Valores.",
+      preview: "Respeito, inovação e transparência guiando cada decisão.",
+      textp: `Compromisso com o cliente
+      Transparência
+      Qualidade em tudo
+      Inovação constante
+      Respeito e responsabilidade`,
+    },
+    {
+      icons: [HandshakeIcon ],
+      title: "Nosso Compromisso com Você.",
+      preview: "Não vendemos apenas produtos. Entregamos confiança.",
+      textp: `Cada produto enviado carrega nosso compromisso com a sua satisfação.
+      Trabalhamos com responsabilidade para garantir que sua compra chegue com 
+      qualidade, segurança e total suporte. Aqui, o pós-venda importa tanto quanto 
+      a primeira visita ao nosso site.`,
+    },
+  ];
+  
 
 const MissionVisionCard = () => {
   const [openModal, setOpenModal] = useState(false);
@@ -132,6 +133,8 @@ const MissionVisionCard = () => {
       </Box>
 
       <Stack
+
+
         sx={(theme) => ({
           display: "grid",
 
@@ -234,11 +237,11 @@ const MissionVisionCard = () => {
                 sx={{
                   color: "rgb(137, 137, 137)",
                   marginBottom: "0.5rem",
-
+                
                   fontSize: { xs: "0.7rem", md: "0.8rem" }, // Ajuste de tamanho
                 }}
               >
-                {/* {item.textp} */}
+                {item.preview}
               </Typography>
             </Box>
           </Box>

@@ -2,16 +2,16 @@ import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Box, Stack, Typography } from "@mui/material";
 import airpods from "../imagens/fonegreen2.png";
-import Quizito2 from "../imagens/foneBranco01.png";
-import Quizito3 from "../imagens/fone1.png";
-import FineRed from "../imagens/Macbook.jpg";
+import foneBranco01 from "../imagens/foneBranco01.png";
+import fone1 from "../imagens/fone1.png";
+import FineRed from "../imagens/tablet15.png";
 import Quizito4 from "../imagens/foneRed21.png";
 import foneVerd from "../imagens/fonegreen13.png";
 
 const ArrayItem = [
-  { imageUrlOne: Quizito2, title: "Ultra Laptop", textp: "Desconto imperdível" },
-  { imageUrlOne: Quizito3, title: "SoundMax Pro", textp: "Som potente 🔥" },
-  { imageUrlOne: FineRed, title: "Tablet X", textp: "Aproveite por R$ 250!" },
+  { imageUrlOne: foneBranco01, title: "Ultra Laptop", textp: "Desconto imperdível" },
+  { imageUrlOne: fone1, title: "SoundMax Pro", textp: "Som potente 🔥" },
+  { imageUrlOne: FineRed, title: "Tablet X", textp: "Aproveite!" },
   { imageUrlOne: Quizito4, title: "AirBuds X", textp: "Frete grátis!" },
   { imageUrlOne: foneVerd, title: "Green Audio", textp: "Edição limitada!" },
   { imageUrlOne: airpods, title: "Headset Gamer", textp: "Conforto + Qualidade" },

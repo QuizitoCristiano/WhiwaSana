@@ -8,6 +8,10 @@ import MasonryImageList from "./meetTheTeam";
 import minhaImagem from "../imagens/fpimag.png";
 import CycleInfoMUIIcon from "./CycleInfoMUI";
 import MissionVisionCard from "./MissionVision";
+import TheEssence from "./Timeline";
+import AboutDesignDeveloperSkill from "./TeamCard";
+import Achievements from "./Achievements";
+import ContactForm from "../contact/ContactForm";
 
 const AlmadaWhiwaSana = () => {
   return (
@@ -362,15 +366,11 @@ const AlmadaWhiwaSana = () => {
             </Stack>
           </Stack>
 
-
-          
-
           <Box
             sx={{
               width: "100%",
               height: "auto",
               marginTop: "3rem",
-           
             }}
           >
             <CycleInfoMUIIcon />
@@ -381,12 +381,87 @@ const AlmadaWhiwaSana = () => {
               width: "100%",
               height: "auto",
               marginTop: "3rem",
-            
             }}
           >
             <MissionVisionCard />
           </Box>
+
+          <Box
+            sx={{
+              width: "100%",
+              height: "auto",
+              marginTop: "3rem",
+            }}
+          >
+            <TheEssence />
+          </Box>
+
+          <Box
+            sx={{
+              width: "100%",
+              height: "auto",
+              marginTop: "3rem",
+            }}
+          >
+            <AboutDesignDeveloperSkill />
+          </Box>
+
+          <Box
+            sx={{
+              position: "relative",
+              width: "100%",
+              height: "20px",
+              gap: "1rem",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              mt: 4,
+              mb: 4,
+            }}
+          >
+            {/* Da esquerda ao meio (escuro → claro) */}
+            <Box
+              sx={{
+                position: "absolute",
+                left: 0,
+                top: 0,
+                width: "50%",
+                height: "2px",
+                background: "linear-gradient(to left, #33BF30, transparent)", // Escuro à direita, claro à esquerda
+              }}
+            />
+
+            {/* Da direita ao meio (claro → escuro) */}
+            <Box
+              sx={{
+                position: "absolute",
+                right: 0,
+                top: 0,
+                width: "50%",
+                height: "2px",
+                background: "linear-gradient(to left, transparent, #33BF30)", // Claro à esquerda, escuro à direita
+              }}
+            />
+          </Box>
+
+          <Box
+            sx={{
+              width: "100%",
+              height: "auto",
+              marginTop: "3rem",
+            }}
+          >
+
+          <Achievements />
+
+          </Box>
         </Stack>
+
+
+
+          
+
+        <ContactForm/>
       </Stack>
     </>
   );
