@@ -222,7 +222,12 @@ const FeaturediPhone = () => {
               },
             })}
           >
+<<<<<<< HEAD
             {appleCollection.map((item, index) => (
+=======
+            {appleCollection.map((item, index) => 
+            (
+>>>>>>> feat/cycle-layout
               <Box
                 key={index}
                 sx={(theme) => ({
