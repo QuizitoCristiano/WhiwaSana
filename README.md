@@ -1,22 +1,14 @@
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
 # WhiwaSana
-=======
->>>>>>> feat/cycle-layout
+
 # React + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este projeto utiliza React com Vite para uma estrutura rápida e moderna, incluindo HMR (Hot Module Replacement) e configurações básicas do ESLint.
 
-Currently, two official plugins are available:
+## Plugins Oficiais
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react) usa [Babel](https://babeljs.io/) para Fast Refresh.
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) usa [SWC](https://swc.rs/) para Fast Refresh.
 
-## Expanding the ESLint configuration
+## Expansão da Configuração do ESLint
 
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-<<<<<<< HEAD
-=======
->>>>>>> 0e5b8ba (Primeiro commit - Adicionando arquivos iniciais)
->>>>>>> feat/cycle-layout
+Se você estiver desenvolvendo uma aplicação de produção, é recomendado o uso de TypeScript e ativar regras de lint com reconhecimento de tipo. Veja o [template com TypeScript](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) para integrar TypeScript e [`typescript-eslint`](https://typescript-eslint.io) ao seu projeto.

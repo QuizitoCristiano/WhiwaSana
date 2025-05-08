@@ -161,8 +161,8 @@ const TheEssence = () => {
           key={index}
           sx={(theme) => ({
             background:
-              "linear-gradient(135deg, rgba(235, 232, 232, 0.47), rgba(65, 62, 62, 0.06))",
-            border: "1px solid rgba(141, 141, 141, 0.16)",
+              "linear-gradient(135deg, rgba(94, 92, 92, 0.77), rgba(36, 34, 34, 0.06))",
+            border: "1px solid rgba(20, 20, 20, 0.16)",
             backdropFilter: "blur(20px)",
             WebkitBackdropFilter: "blur(20px)",
             borderRadius: "10px",
@@ -194,7 +194,7 @@ const TheEssence = () => {
           <CardHeader
             avatar={
               <Avatar
-                sx={{ bgcolor: '#33bf30', fontSize: "1rem" }}
+                sx={{ bgcolor: "#33bf30", fontSize: "1rem" }}
                 aria-label="avatar"
               >
                 {item.textAvatar}
@@ -202,8 +202,10 @@ const TheEssence = () => {
             }
             title={item.name}
             subheader={item.title}
+            subheaderTypographyProps={{ sx: { color: "white", fontSize:'0.60rem'} }}
             sx={{ textAlign: "left" }}
           />
+
           <Box
             sx={(theme) => ({
               background:
@@ -219,10 +221,9 @@ const TheEssence = () => {
               width: "100%",
               overflow: "hidden",
 
-              [theme.breakpoints.down(420)]:{
-                height:'350px'
-              }
-
+              [theme.breakpoints.down(420)]: {
+                height: "350px",
+              },
             })}
           >
             <img

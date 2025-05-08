@@ -16,6 +16,7 @@ import {
   LinkedIn as LinkedInIcon,
   Visibility,
   VisibilityOff,
+  JavascriptSharp,
 } from "@mui/icons-material";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import InstagramIcon from "@mui/icons-material/Instagram";
@@ -30,6 +31,7 @@ import InputMask from "react-input-mask";
 import "./ContactStyles.css";
 
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions"; // Ícone do botão para abrir o modal
+import js from "@eslint/js";
 
 const emojiList = [
   { name: "Riso com Lágrimas", emoji: "🤣" },
@@ -145,6 +147,8 @@ const ContactForm = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+     
+
 
     setFormData((prevData) => ({
       ...prevData,

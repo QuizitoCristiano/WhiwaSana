@@ -72,7 +72,7 @@ const myLink = [
 
 =======
   { label: "Conheça_nos", link: "/AlmadaWhiwaSana" }, // agora com espaço
-  { label: "Produtos", link: "/produtos" },
+  { label: "Produtos", link: "/PromocoesPage" },
 ];
 
 
