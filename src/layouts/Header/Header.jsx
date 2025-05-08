@@ -66,7 +66,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 const myLink = [
   { label: "Home", link: "/" },
   { label: "Conheça_nos", link: "/AlmadaWhiwaSana" }, // agora com espaço
-  { label: "Produtos", link: "/produtos" },
+  { label: "Produtos", link: "/PromocoesPage" },
 ];
 
 

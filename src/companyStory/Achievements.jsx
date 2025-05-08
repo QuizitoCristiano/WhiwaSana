@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Box, Stack, Typography } from "@mui/material";
 
-// Cambia el nombre de este componente para evitar conflictos
+
 const CounterComponent = ({ endValue }) => {
   const [count, setCount] = useState(0);
   const ref = useRef(null);
@@ -11,15 +11,22 @@ const CounterComponent = ({ endValue }) => {
       (entries) => {
         if (entries[0].isIntersecting) {
           let start = 0;
-          const duration = 2000; // Duración de la animación en milisegundos
+          const duration = 2000; // Duración de la animación en milisimos de seundos
           const increment = parseFloat(endValue) / (duration / 16);
+
 
           const timer = setInterval(() => {
             start += increment;
             if (start >= parseFloat(endValue)) {
               setCount(endValue);
-              clearInterval(timer);
+          
+                
+              
+             
+              clearInterval(timer); 
             } else {
+              
+              
               setCount(Math.ceil(start));
             }
           }, 16);

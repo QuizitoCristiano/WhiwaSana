@@ -7,6 +7,7 @@ import { MainLayout } from "../layouts/mylayouts";
 import { MyFooter } from "../footer/footerBx";
 import ContactForm from "../contact/ContactForm";
 import AlmadaWhiwaSana from "../companyStory/CompanyHistory";
+import PromocoesPage from "../Promocoes/PromocoesPage";
 
 
 
@@ -25,6 +26,9 @@ const MainRoutes = () => {
         <Route path="/" element={<MyHome />} />
         
         <Route  path="/AlmadaWhiwaSana" element={<AlmadaWhiwaSana/>}/>
+        
+        <Route  path="/PromocoesPage" element={<PromocoesPage/>}/>
+        
         
       </Routes>
 
