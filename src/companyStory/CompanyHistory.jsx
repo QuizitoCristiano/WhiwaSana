@@ -64,7 +64,7 @@ const AlmadaWhiwaSana = () => {
               flexDirection: { xs: "column", md: "row" },
               display: "flex",
               width: "100%",
-
+              marginTop: '3rem',
               minHeight: { md: "100vh" }, // altura total só em telas md+
               alignItems: { md: "center" }, // opcional: alinha verticalmente
               justifyContent: "space-between", // ou "center", depende do layout
@@ -81,7 +81,7 @@ const AlmadaWhiwaSana = () => {
                 display: "flex",
                 alignItems: "flex-start",
                 justifyContent: "center",
-
+                
                 width: {
                   xs: "100%",
                   md: "45%",
@@ -95,7 +95,7 @@ const AlmadaWhiwaSana = () => {
                     height: "4rem",
                     width: "1.5rem",
                     marginRight: "1.5rem",
-
+                  
                     backgroundColor: "#33bf30",
                     borderRadius: "20px",
                   }}
