@@ -65,18 +65,12 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 
 const myLink = [
   { label: "Home", link: "/" },
-<<<<<<< HEAD
-  { label: "Sobre_Nós", link: "/IndexAboutUs" },
-  { label: "Produtos", link: "/produtos" },
-];
-
-=======
   { label: "Conheça_nos", link: "/AlmadaWhiwaSana" }, // agora com espaço
   { label: "Produtos", link: "/PromocoesPage" },
 ];
 
 
->>>>>>> feat/cycle-layout
+
 export const MyHeader = () => {
   const { favoriteItem, setFavoriteItem, carinho, setcarinho,  } = useContext(GlobalContext);
   const [listaFavoritos, setListaFavoritos] = useState(false);

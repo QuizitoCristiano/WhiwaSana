@@ -1,8 +1,5 @@
-<<<<<<< HEAD
-import Quizito from "../../imagens/quizito2.png";
-=======
+
 import Quizito from "../../managerImg/quizito4.png";
->>>>>>> feat/cycle-layout
 import novoquizito from "../../imagens/novoquizito.png";
 import pordoSol from "../../imagens/por-do-sol-sobre.png";
 import paisagem from "../../imagens/paisagem.png";

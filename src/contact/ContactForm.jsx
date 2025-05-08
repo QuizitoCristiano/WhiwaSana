@@ -220,11 +220,10 @@ const ContactForm = () => {
         sx={{
           width: "100%",
           minHeight: "100vh", // Permite crescer
-<<<<<<< HEAD
+
           marginTop: "10%",
-=======
-       
->>>>>>> feat/cycle-layout
+
+
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
