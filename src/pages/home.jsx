@@ -14,6 +14,7 @@ import { MyFooter } from "../footer/footerBx";
 import WishlistItem from "../Wishlist/WishlistView";
 import ContactForm from "../contact/ContactForm";
 import ProductDetails from "../componetes/MonitorCard/MonitorList";
+import MapHome from "../Promocoes/PaginaPromocoes";
 // import ControlledCarousel from "./carousel/HeadphoneImageContainer ";
 
 export const MyHome = () => {
@@ -57,6 +58,7 @@ export const MyHome = () => {
         <ControlledCarousel />
         <Testimonials />
         <Category />
+        <MapHome/>
         <DiscoverOurHeadphones />
         <ElectronicsItemOne />
         <PromoCard />
@@ -69,7 +71,7 @@ export const MyHome = () => {
         <ProductDetails/>
         <ContactForm/>
         
-        <MyFooter />
+        {/* <MyFooter /> */}
       </Stack>
     </>
   );
