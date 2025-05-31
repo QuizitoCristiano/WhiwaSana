@@ -4,7 +4,10 @@ import React, { useState } from 'react';
 import { Box, Stack } from '@mui/material';
 import "./carousel.css";
 
+// headphone.png
+
 import foneBranco1 from "../../imagens/foneBranco01.png";
+
 import foneBranco12 from "../../imagens/foneBrango28.png";
 import foneBranco13 from "../../imagens/foneBranco13.png";
 import foneBranco11 from "../../imagens/foneBranco11.png";
@@ -12,7 +15,8 @@ import foneBranco11 from "../../imagens/foneBranco11.png";
 import Fone4 from "../../imagens/fone1.png";
 import fonepreto03 from "../../imagens/fonepreto03.png";
 import fonepreto21 from "../../imagens/fonepreto21.png";
-import fonepreto22 from "../../imagens/fonepreto22.png";
+// import fonepreto22 from "../../imagens/fonepreto22.png";
+import foneBranco4 from "../../imagens/headphone.png";
 
 import FineRed from "../../imagens/Macbook.jpg";
 import fonered020 from "../../imagens/fonered020.png";
@@ -82,7 +86,7 @@ export const ControlledCarousel = () => {
 
   const colorImages = {
     white: [foneBranco1, foneBranco12, foneBranco13, foneBranco11],
-    black: [Fone4, fonepreto03, fonepreto21, fonepreto22],
+    black: [ foneBranco4, Fone4, fonepreto03, fonepreto21],
     red: [FineRed, fonered020, foneRed21, fonered25],
     green: [airpods, fonegreen13, foneGreen11, fonegreen23],
   };
@@ -94,7 +98,7 @@ export const ControlledCarousel = () => {
 
   const trocaCorParaPreto = () => {
     setHeadphoneColor("black");
-    setMainImage(Fone4);
+    setMainImage(foneBranco4);
   };
 
   const trocaCorParaRed = () => {

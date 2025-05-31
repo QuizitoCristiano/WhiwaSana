@@ -9,13 +9,65 @@ import iPhoneRosa from "../../imagens/iPhoneRosapr.png";
 import iPhoneAzul from "../../imagens/iPhoneAzul.png";
 import iPhoneverdcralor from "../../imagens/iPhoneverdcralor.png";
 
+
+import foneDeOuvido1 from "../../Promocoes/promoImages/airpodsrenove.png";
+import foneDeOuvido2 from "../../Promocoes/promoImages/airpods.png";
+import foneDeOuvido3 from "../../Promocoes/promoImages/FoneMK2F1.png";
+import foneDeOuvido4 from "../../Promocoes/promoImages/FoneMK2F3.png";
+
+
+
+import foneDeOuvido5 from "../../Promocoes/promoImages/MH6P2_AV5.png";
+import foneDeOuvido6 from "../../Promocoes/promoImages/MQTR3.png";
+import foneDeOuvido7 from "../../Promocoes/promoImages/MK2G4.png";
+import foneDeOuvido8 from "../../Promocoes/promoImages/MQTT3_AV7.png";
+
+
+
+
+
+
+import monitorGalax1 from "../../Promocoes/promoImages/Adobe.png";
+import tripe1 from "../../Promocoes/promoImages/HNKK2_AV3.png";
+import monitorGalax13 from "../../Promocoes/promoImages/monitor-alienware.png";
+import monitorApple4 from "../../Promocoes/promoImages/HPE82_AV2.png";
+
+
+
+import monitorApple5 from "../../Promocoes/promoImages/smart-m7.png";
+import monitorApple46 from "../../Promocoes/promoImages/monitorGalax3.png";
+import suporte7 from "../../Promocoes/promoImages/monitor-alienware1.png";
+import suporte8 from "../../Promocoes/promoImages/MX5M3_AV1.png";
+
+
+
+
+
+
+
+import pelicuGalax1 from "../../Promocoes/PeliculaIaIamg/HP632_AV3.png";
+import tripe2 from "../../Promocoes/PeliculaIaIamg/foneHTS.png";
+import pelicuGalax2 from "../../Promocoes/PeliculaIaIamg/HP632pelicula2.png";
+import peliculaApple4 from "../../Promocoes/PeliculaIaIamg/HR2A2_AV3pelicula-.png";
+
+
+
+import peliculaApple5 from "../../Promocoes/PeliculaIaIamg/mauser.png";
+import peliculaApple46 from "../../Promocoes/PeliculaIaIamg/ApphleAV3pelicula-.png";
+import suporte75 from "../../Promocoes/PeliculaIaIamg/pelicula.png";
+import suporte84 from "../../Promocoes/promoImages/HNKK2_AV4.png"
+
+
+
+// airpodsrenove.png
+
 const appleCollection = [
   {
     id: 1,
     title: "iPhone 13",
     brand: "Apple",
     price: 4999.99,
-    image: "/assets/images/iphone13.png",
+    image: iPhoneverdcralor,
     specs: ["128GB", '6.1"', "A15 Bionic"],
   },
   {
@@ -23,59 +75,61 @@ const appleCollection = [
     title: "iPhone 14 Pro",
     brand: "Apple",
     price: 7999.99,
-    image: "/assets/images/iphone14pro.png",
+    image: iPhoneOferta4e,
     specs: ["256GB", '6.1"', "A16 Bionic"],
   },
 ];
 
 const premiumScreenProtectors = [
-  {
-    id: "p1",
-    title: "Película 5D Ultra HD",
-    imageOne: "pelicula-5d-ultra-hd.jpg",
-    price: "39,90",
-  },
+
   {
     id: "p2",
-    title: "Película de Vidro Nano",
-    imageOne: "pelicula-vidro-nano.jpg",
-    price: "29,90",
+    title: "Fone de ouvido",
+    imageOne: tripe2,
+    price: 3.343,
   },
   {
     id: "p3",
-    title: "Película 9D Full Cover",
-    imageOne: "pelicula-9d-full-cover.jpg",
-    price: "49,90",
+    title: "Película de tela iPhone 14 Pro Max",
+    imageOne: peliculaApple46,
+    price: 499,
+  },
+    {
+    id: "p1",
+    title: "Ultra da Belkin para iPhone SE / 8 / 7",
+    imageOne: pelicuGalax1,
+    price: 499,
   },
   {
     id: "p4",
-    title: "Película Híbrida Flexível",
-    imageOne: "pelicula-hibrida-flexivel.jpg",
-    price: "34,90",
+    title: "Película de tela iPhone SE / 8 / 7",
+    imageOne: pelicuGalax2,
+    price: 279,
   },
+
   {
     id: "p5",
-    title: "Película de Vidro Curvo",
-    imageOne: "pelicula-vidro-curvo.jpg",
-    price: "44,90",
+    title: "Película UltraGlass da Belkin",
+    imageOne: peliculaApple4,
+    price: 349,
   },
   {
     id: "p6",
-    title: "Película de Privacidade",
-    imageOne: "pelicula-privacidade.jpg",
-    price: "59,90",
+    title: "Mouse Gamer sem fio Alienware",
+    imageOne: peliculaApple5,
+    price: 1.119,
   },
   {
     id: "p7",
     title: "Película Antirreflexo Matte",
-    imageOne: "pelicula-antirreflexo-matte.jpg",
-    price: "32,90",
+    imageOne: suporte75,
+    price: 896,
   },
   {
     id: "p8",
-    title: "Película Blue Light Protection",
-    imageOne: "pelicula-blue-light-protection.jpg",
-    price: "54,90",
+    title: "Tripé multifuncional",
+    imageOne: suporte84,
+    price: 499,
   },
 ];
 
@@ -83,116 +137,127 @@ const professionalHeadphonesList = [
   {
     id: "f1",
     title: "Fone Bluetooth InPods",
-    imageOne: "inpods-bluetooth.jpg",
+    imageOne: foneDeOuvido1,
     price: "89,90",
   },
   {
     id: "f2",
     title: "Fone JBL Wireless",
-    imageOne: "jbl-wireless.jpg",
+    imageOne: foneDeOuvido2,
     price: "199,90",
   },
   {
     id: "f3",
     title: "Fone Sony Extra Bass",
-    imageOne: "sony-extra-bass.jpg",
+    imageOne: foneDeOuvido3,
     price: "249,90",
   },
   {
     id: "f4",
     title: "Fone Apple AirPods",
-    imageOne: "apple-airpods.jpg",
+    imageOne: foneDeOuvido4,
     price: "999,90",
   },
   {
     id: "f5",
     title: "Fone Samsung Galaxy Buds",
-    imageOne: "samsung-galaxy-buds.jpg",
+    imageOne: foneDeOuvido5,
     price: "499,90",
   },
   {
     id: "f6",
     title: "Fone Beats Studio Buds",
-    imageOne: "beats-studio-buds.jpg",
+    imageOne: foneDeOuvido6,
     price: "799,90",
   },
   {
     id: "f7",
     title: "Fone Edifier W800BT",
-    imageOne: "edifier-w800bt.jpg",
+    imageOne: foneDeOuvido7,
     price: "329,90",
   },
   {
     id: "f8",
     title: "Fone Xiaomi Redmi Buds",
-    imageOne: "xiaomi-redmi-buds.jpg",
+    imageOne: foneDeOuvido8,
     price: "179,90",
   },
 ];
 
+
+// R$ 1.799,10 à vista (10% de desconto)
 const professionalMonitorsList = [
+  //  {
+  //   id: 1,
+  //   title: 'Microfone HypeMiC da Apogee',
+  //   brand: "LG",
+  //   price: 4.929,
+  //   imageOne: monitorGalax1,
+  //   specs: ["144Hz", "1ms", "IPS", "Full HD"],
+  // },
   {
     id: 1,
-    title: 'Monitor LG Ultragear 27"',
+    title: 'Monitor Gamer Alienware 29 AW2724DM',
     brand: "LG",
-    price: 1499.99,
-    image: "/assets/images/lg-ultragear-27.jpg",
+    price: 2.694,
+    imageOne: monitorGalax1,
     specs: ["144Hz", "1ms", "IPS", "Full HD"],
   },
   {
     id: 2,
-    title: 'Monitor Samsung Curved 24"',
+    title: 'Tripé multifuncional',
     brand: "Samsung",
-    price: 1099.9,
-    image: "/assets/images/samsung-curved-24.jpg",
+    price: 669,
+    imageOne: tripe1,
     specs: ["75Hz", "4ms", "VA", "Full HD"],
   },
   {
     id: 3,
-    title: 'Monitor AOC Gamer 32"',
+    title: 'Monitor Gamer Alienware 27',
     brand: "AOC",
-    price: 1799.0,
-    image: "/assets/images/aoc-gamer-32.jpg",
-    specs: ["165Hz", "1ms", "VA", "QHD"],
+    price: 2.894,
+    imageOne: monitorGalax13,
+    
   },
   {
     id: 4,
-    title: 'Monitor Dell UltraSharp 27"',
+    title: 'Base dobrável em alumínio da Satechi',
     brand: "Dell",
-    price: 2399.0,
-    image: "/assets/images/dell-ultrasharp-27.jpg",
+    price: 2.559,
+    imageOne: monitorApple4,
     specs: ["60Hz", "5ms", "IPS", "QHD"],
+  },
+    {
+    id: 7,
+    title: 'Monitor Galax S34',
+    brand: "Acer",
+    price: 4.499,
+    imageOne: monitorApple5,
+    specs: ["120Hz", "1ms", "IPS", "UWQHD"],
   },
   {
     id: 5,
-    title: 'Monitor Asus TUF Gaming 24"',
+    title: ' Monitor Gamer Curvo Alienware',
     brand: "Asus",
-    price: 1299.9,
-    image: "/assets/images/asus-tuf-gaming-24.jpg",
+    price:  6.998,
+    imageOne: suporte7,
     specs: ["165Hz", "1ms", "IPS", "Full HD"],
   },
   {
     id: 6,
-    title: 'Monitor Philips 27" LED',
+    title: 'Monitor Galax S27 LED',
     brand: "Philips",
     price: 999.9,
-    image: "/assets/images/philips-led-27.jpg",
+    imageOne: monitorApple46,
     specs: ["75Hz", "4ms", "IPS", "Full HD"],
   },
-  {
-    id: 7,
-    title: 'Monitor Acer Predator 34"',
-    brand: "Acer",
-    price: 4499.9,
-    image: "/assets/images/acer-predator-34.jpg",
-    specs: ["120Hz", "1ms", "IPS", "UWQHD"],
-  },
+
   {
     id: 8,
-    title: 'Monitor Lenovo ThinkVision 24"',
+    title: 'Adaptador para montagem VESA',
     brand: "Lenovo",
-    price: 1149.9,
-    image: "/assets/images/lenovo-thinkvision-24.jpg",
+    price:  1.999,
+    imageOne: suporte8,
     specs: ["60Hz", "6ms", "IPS", "Full HD"],
   },
 ];

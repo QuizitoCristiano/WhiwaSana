@@ -91,10 +91,9 @@ const ContactForm = () => {
       ...prev,
       message: prev.message + emoji,
     }));
-  
+
     handleCloseModal(); // Se quiser fechar o modal automaticamente
   };
-  
 
   const filteredEmojis = emojiList.filter((emoji) =>
     emoji.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -147,8 +146,6 @@ const ContactForm = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-     
-
 
     setFormData((prevData) => ({
       ...prevData,
@@ -180,16 +177,12 @@ const ContactForm = () => {
       errors.telefone = "Digite um telefone válido";
     }
 
-
-    
-  // ✅ Validação do campo mensagem com mínimo de 30 caracteres
-  if (!formData.message.trim()) {
-    errors.message = "A mensagem não pode estar vazia";
-  } else if (formData.message.trim().length < 30) {
-    errors.message = "A mensagem deve ter no mínimo 30 caracteres";
-  }
-  
-    
+    // ✅ Validação do campo mensagem com mínimo de 30 caracteres
+    if (!formData.message.trim()) {
+      errors.message = "A mensagem não pode estar vazia";
+    } else if (formData.message.trim().length < 30) {
+      errors.message = "A mensagem deve ter no mínimo 30 caracteres";
+    }
 
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
@@ -222,7 +215,6 @@ const ContactForm = () => {
           minHeight: "100vh", // Permite crescer
 
           marginTop: "10%",
-
 
           display: "flex",
           justifyContent: "center",
@@ -762,9 +754,8 @@ const ContactForm = () => {
             <Box sx={{ display: "flex", flexWrap: "wrap", marginTop: 1 }}>
               {filteredEmojis.map((emoji) => (
                 <IconButton key={emoji.name} onClick={AddEmoji(emoji.emoji)}>
-                <span style={{ fontSize: "24px" }}>{emoji.emoji}</span>
-              </IconButton>
-              
+                  <span style={{ fontSize: "24px" }}>{emoji.emoji}</span>
+                </IconButton>
               ))}
             </Box>
           </Box>

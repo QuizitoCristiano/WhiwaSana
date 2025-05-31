@@ -10,9 +10,11 @@
 // import maes2 from "./promoImages/maes2.png";
 // import maes3 from "./promoImages/maes3.png";
 
-// import namorados1 from "./promoImages/appletv-alp.png";
-// import namorados2 from "./promoImages/namorados2.png";
-// import namorados3 from "./promoImages/namorados3.png";
+
+import namorados1 from "./imagensNamorados/namorados03.png"
+import namorados3 from "./imagensNamorados/pmdinternacional.png";
+import namorados2 from "./imagensNamorados/namorado3.png";
+import namorados4 from "./imagensNamorados/galaxnamorado.png";
 
 // import pais1 from "./promoImages/pais1.png";
 // import pais2 from "./promoImages/pais2.png";
@@ -42,6 +44,9 @@ import surpresa1 from "./promoImages/maeprom1.png";
 import surpresa2 from "./promoImages/madarDay.png";
 import surpresa3 from "./promoImages/iphoneMae.png";
 import surpresa4 from "./promoImages/meaeProm.png";
+// import surpresa4 from "./imagensNamorados/galaxnamorado.png";
+
+
 
 export const promocoes = [
   {
@@ -82,7 +87,7 @@ export const promocoes = [
     intervaloDiasDepois: 5,
     mensagemTitulo: "Dia dos Namorados",
     mensagemTexto: "Surpreenda quem você ama com um presente especial!",
-    // imagens: [namorados1, namorados2, namorados3],
+    imagens: [namorados1, namorados2, namorados3, namorados4],
   },
   {
     id: "dia-dos-pais",
