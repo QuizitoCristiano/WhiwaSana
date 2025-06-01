@@ -6,17 +6,23 @@ import "./carousel.css";
 
 // headphone.png
 
-import foneBranco1 from "../../imagens/foneBranco01.png";
+import foneBranco1 from "../../imagens/headphone2Branco.png";
 
-import foneBranco12 from "../../imagens/foneBrango28.png";
-import foneBranco13 from "../../imagens/foneBranco13.png";
-import foneBranco11 from "../../imagens/foneBranco11.png";
+// import foneBranco12 from "../../imagens/foneBrango28.png";
+// import foneBranco13 from "../../imagens/foneBranco13.png";
+// import foneBranco11 from "../../imagens/foneBranco11.png";
+
+import foneBranco12 from "../../imagens/foneBranco01.png";
+import foneBranco13 from "../../imagens/headphone2Branco.png";
+import foneBranco11 from "../../imagens/headphone3Branco.png";
 
 import Fone4 from "../../imagens/fone1.png";
-import fonepreto03 from "../../imagens/fonepreto03.png";
-import fonepreto21 from "../../imagens/fonepreto21.png";
+import fonepreto03 from "../../imagens/headphone3.png";
+import fonepreto21 from "../../imagens/headphone2.png";
 // import fonepreto22 from "../../imagens/fonepreto22.png";
 import foneBranco4 from "../../imagens/headphone.png";
+
+
 
 import FineRed from "../../imagens/Macbook.jpg";
 import fonered020 from "../../imagens/fonered020.png";
@@ -27,6 +33,14 @@ import airpods from "../../imagens/fonegreen2.png";
 import fonegreen13 from "../../imagens/fonegreen13.png";
 import foneGreen11 from "../../imagens/foneGreen11.png";
 import fonegreen23 from "../../imagens/fonegreen23.png";
+
+
+
+
+
+
+
+
 
 const HeadphoneImageContainer = ({ images, setMainImage }) => {
   return (

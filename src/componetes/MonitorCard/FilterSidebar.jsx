@@ -59,7 +59,88 @@ import suporte84 from "../../Promocoes/promoImages/HNKK2_AV4.png"
 
 
 
-// airpodsrenove.png
+import capaGalax2 from "../../Promocoes/imgCapinhas/capaGalax2.png";
+import  bateria from "../../Promocoes/imgCapinhas/bateria.png";
+import capaGalax1 from "../../Promocoes/imgCapinhas/capaGalax.png";
+import matelata from "../../Promocoes/imgCapinhas/matela.png";
+
+import capaIphone5 from "../../Promocoes/imgCapinhas/capaIphone1.png";
+import capaIphone3 from "../../Promocoes/imgCapinhas/capaIphone2.png";
+import capaGalax3 from "../../Promocoes/imgCapinhas/capaPasta.png";
+import capaIphone4 from "../../Promocoes/imgCapinhas/capaIhone.png";
+
+
+
+
+
+
+import cpu1 from "../../Promocoes/imgCapinhas/InspironSmall.png";
+import  cpu2 from "../../Promocoes/imgCapinhas/pcGamer.png";
+import cpu3 from "../../Promocoes/imgCapinhas/tecladoGamar.png";
+import cpu4 from "../../Promocoes/imgCapinhas/InspironSmall1.png";
+
+import cpu5 from "../../Promocoes/imgCapinhas/pcGamer1.png";
+import cpu6 from "../../Promocoes/imgCapinhas/tecladoGamar1.png";
+import cpu7 from "../../Promocoes/imgCapinhas/MXCK3.png";
+import cpu8 from "../../Promocoes/imgCapinhas/pcGamer2.png";
+
+
+// teclado  para modelos de Mac com chip da Apple. valor:1.699 tecladoGamer.png,
+
+// InspironSmall.png
+
+
+
+const premiumCPU = [
+  {
+    id: "cpu1",
+    title: "Inspiron Small Desktop  Core™ i5-12400  ",
+    imageOne: cpu1,
+    price: 4.199,
+  },
+  {
+    id: "cpu2",
+    title: " PC Gamer Alienware Aurora Core™ Ultra 7 265KF",
+    imageOne: cpu2,
+    price: 16.511,
+  },
+  {
+    id: "cpu3",
+    title: "Teclado Gamer Alienware Tenkeyless",
+     imageOne: cpu3,
+    price: 761,
+  },
+  {
+    id: "cpu4",
+    title: "Desktop Dell Tower Plus  Core™ Ultra 7 265",
+   imageOne: cpu4,
+    price: 11.498,
+  },
+  {
+    id: "cpu5",
+    title: "PC Gamer Alienware Aurora Core™ Ultra 7 265KF",
+    imageOne: cpu5,
+    price: 16.511,
+  },
+  {
+    id: "cpu6",
+    title: " Teclado Gamer Alienware Tenkeyless",
+    imageOne: cpu6,
+    price: 761,
+  },
+  {
+    id: "cpu7",
+    title: "Teclado Mac com chip da Apple",
+    imageOne: cpu7,
+    price: 1.699,
+  },
+  {
+    id: "cpu8",
+    title: "Desktop Dell Tower Plus  Core™i5 265KF",
+    imageOne: cpu8,
+    price: 5.498,
+  },
+];
 
 const appleCollection = [
   {
@@ -184,8 +265,6 @@ const professionalHeadphonesList = [
   },
 ];
 
-
-// R$ 1.799,10 à vista (10% de desconto)
 const professionalMonitorsList = [
   //  {
   //   id: 1,
@@ -265,51 +344,51 @@ const professionalMonitorsList = [
 const premiumCasesList = [
   {
     id: "c1",
-    title: "Capinha Silicone Preta",
-    image: "/assets/images/capinha-silicone-preta.jpg",
-    price: "49,90",
+    title: "Capinha Multi cores ",
+    imageOne: capaGalax2,
+    price: 199,
   },
   {
     id: "c2",
-    title: "Capinha Transparente Antiamarelamento",
-    image: "/assets/images/capinha-transparente-antiamarelamento.jpg",
-    price: "45,90",
+    title: "Bateria plus 10K de mophie ",
+    imageOne: bateria,
+    price: 1.099,
   },
   {
     id: "c3",
-    title: "Capinha Armor Shockproof",
-    image: "/assets/images/capinha-armor-shockproof.jpg",
-    price: "59,90",
+    title: "Capa Transparente Galaxy",
+     imageOne: capaGalax1,
+    price: 122,
   },
   {
     id: "c4",
-    title: "Capinha de Couro Premium",
-    image: "/assets/images/capinha-couro-premium.jpg",
-    price: "89,90",
+    title: "Maleta Dell EcoLoop Pro Slim 15",
+   imageOne: matelata,
+    price: 198,
   },
   {
     id: "c5",
-    title: "Capinha Silicone Rosa Pastel",
-    image: "/assets/images/capinha-silicone-rosa-pastel.jpg",
-    price: "49,90",
+    title: "Capa de silicone com Água-marinha",
+     imageOne: capaIphone5,
+    price: 569,
   },
   {
     id: "c6",
-    title: "Capinha MagSafe Transparente",
-    image: "/assets/images/capinha-magsafe-transparente.jpg",
-    price: "79,90",
+    title: "Capa transparente ",
+    imageOne: capaIphone3,
+    price: 469,
   },
   {
     id: "c7",
-    title: "Capinha Antichoque Rugged",
-    image: "/assets/images/capinha-antichoque-rugged.jpg",
-    price: "69,90",
+    title: "Capa Dell Pro 15-16",
+    imageOne: capaGalax3,
+    price: 160,
   },
   {
     id: "c8",
-    title: "Capinha Slim Fosca",
-    image: "/assets/images/capinha-slim-fosca.jpg",
-    price: "39,90",
+    title: "Capa de silicone Preto ",
+    imageOne: capaIphone4,
+    price: 569,
   },
 ];
 
@@ -321,6 +400,7 @@ const premiumCasesList = [
   CapinhasParaSmartphones: premiumCasesList,
 
   fones: professionalHeadphonesList,
+  cpu: premiumCPU,
 };
 
 export default Categories;
