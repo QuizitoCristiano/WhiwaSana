@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Box, Stack } from '@mui/material';
 import "./carousel.css";
 
+
 // headphone.png
 
 import foneBranco1 from "../../imagens/headphone2Branco.png";
@@ -42,57 +43,65 @@ import fonegreen23 from "../../imagens/fonegreen23.png";
 
 
 
+
+
+
 const HeadphoneImageContainer = ({ images, setMainImage }) => {
+  const containerStyles = {
+    color: 'white',
+    fontSize: '1.5rem',
+    padding: '10px',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    height: '100%',
+    width: '150px',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '20px',
+    '& img': {
+      maxWidth: '100%',
+      display: 'flex',
+      alignContent: 'center',
+      justifyContent: 'center',
+      alignItems: 'center',
+      width: '100%',
+      height: '100%',
+      borderRadius: '10px',
+      transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+      '&:hover': {
+        transform: 'scale(1.1)',
+        boxShadow: '0 0 10px 2px #33bf30',
+        border: '2px solid #33bf30',
+      },
+    },
+    '@media (max-width: 1000px)': {
+      width: '80px',
+      height: '100%',
+    },
+  };
+
+  const imageBoxStyles = {
+    bgcolor: '#343534',
+    padding: '5px',
+    width: '80px',
+    height: '80px',
+    borderRadius: '15px',
+  };
+
   return (
-    <Box
-      sx={{
-        color: 'white',
-        fontSize: '1.5rem',
-        padding: '10px',
-        borderRadius: '5px',
-        cursor: 'pointer',
-        height: '100%',
-        width: '150px',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: '20px',
-        '& img': {
-          maxWidth: '100%',
-          display: 'flex',
-          alignContent: 'center',
-          justifyContent: 'center',
-          alignItems: 'center',
-          width: '100%',
-          height: '100%',
-          borderRadius: '10px',
-          transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-          '&:hover': {
-            transform: 'scale(1.1)',
-            boxShadow: '0 0 10px 2px #33bf30',
-            border: '2px solid #33bf30'
-          }
-        },
-        '@media (max-width: 1000px)': {
-          width: '80px',
-          height: '100%',
-        }
-      }}
-    >
+    <Box sx={containerStyles}>
       {images.map((img, index) => (
-        <Box key={index} sx={{
-          bgcolor: '#343534',
-          padding: '5px',
-          width: '80px',
-          height: '80px',
-          borderRadius: '15px',
-        }}>
+        <Box key={index} sx={imageBoxStyles}>
           <img src={img} alt="Headphone" onClick={() => setMainImage(img)} />
         </Box>
       ))}
     </Box>
   );
 };
+
+
+
 
 export const ControlledCarousel = () => {
   const [headphoneColor, setHeadphoneColor] = useState("white");

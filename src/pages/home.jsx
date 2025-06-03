@@ -15,6 +15,10 @@ import WishlistItem from "../Wishlist/WishlistView";
 import ContactForm from "../contact/ContactForm";
 import ProductDetails from "../componetes/MonitorCard/MonitorList";
 import MapHome from "../Promocoes/PaginaPromocoes";
+import Signup from "../Cadastro/SignUpPage";
+import Login from "../Cadastro/LoginPage";
+import RecuperarSeanha from "../Cadastro/ForgotPasswordPage";
+import AlterarSenha from "../Cadastro/UpdatePassword";
 // import ControlledCarousel from "./carousel/HeadphoneImageContainer ";
 
 export const MyHome = () => {
@@ -70,8 +74,18 @@ export const MyHome = () => {
 
         <ProductDetails/>
         <ContactForm/>
+
+
+
         
         {/* <MyFooter /> */}
+       
+       {/* <AlterarSenha/>
+        <RecuperarSeanha/>
+          <Login/>
+        <Signup/> */}
+
+        
       </Stack>
     </>
   );

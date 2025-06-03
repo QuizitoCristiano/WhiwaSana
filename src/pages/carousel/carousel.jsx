@@ -4,7 +4,8 @@ import "./carousel.css";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Box, Button, Stack, Typography} from "@mui/material";
-import HeadphoneImageContainer from "./HeadphoneImageContainer ";
+import HeadphoneImageContainer from "./HeadphoneImageContainer";
+
 import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 
