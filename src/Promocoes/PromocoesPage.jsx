@@ -17,7 +17,7 @@ const PromocoesPage = () => (
       textAlign: "center",
       justifyContent: "center",
       flexDirection: "column",
-      padding: "30px 2% 20px",
+      padding: "80px 2% 20px",
       transition: "3s ease-in-out",
       "@media only screen and (max-width: 800px)": {
         width: "100%",
