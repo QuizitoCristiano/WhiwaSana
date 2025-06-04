@@ -1,4 +1,7 @@
 
+import airpods1 from "../../imagens/foncentrlVerde2.png";
+import airpods2 from "../../imagens/fone12.png";
+import airpods3 from "../../imagens/fonVerde4.png";
 import airpods from "../../imagens/fonegreen2.png";
 import Quizito2 from "../../imagens/foneBranco01.png";
 import Quizito3 from "../../imagens/fone1.png";
@@ -13,7 +16,7 @@ const headphonesData = [
     title: "Headphone X1",
     description: "Qualidade de som incrível",
     price: "R$ 279,90",
-    imageOne: airpods,
+    imageOne: airpods1,
   },
   {
     id: 2,
@@ -27,7 +30,7 @@ const headphonesData = [
     title: "Headphone X1",
     description: "Qualidade de som incrível",
     price: "R$ 289,90",
-    imageOne: airpods,
+    imageOne: airpods2,
   },
   {
     id: 4,
@@ -55,7 +58,7 @@ const headphonesData = [
     title: "Headphone X1",
     description: "Qualidade de som incrível",
     price: "R$ 269,90",
-    imageOne: airpods,
+    imageOne: airpods3,
   },
   {
     id: 8,

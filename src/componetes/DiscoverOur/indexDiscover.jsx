@@ -56,7 +56,7 @@ const DiscoverOurHeadphones = ({ adicionarNovoItem }) => {
             Explorar os mais vendidos
           </Typography>
         </Stack>
-
+{/* 
         <Stack
           sx={{
             display: "flex",
@@ -94,7 +94,7 @@ const DiscoverOurHeadphones = ({ adicionarNovoItem }) => {
           >
             <ArrowForwardIosIcon sx={{ color: "rgb(51, 191, 48)" }} />
           </Button>
-        </Stack>
+        </Stack> */}
       </Stack>
 
       <Stack

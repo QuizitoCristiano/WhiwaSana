@@ -14,7 +14,7 @@ import foneBranco1 from "../../imagens/headphone2Branco.png";
 // import foneBranco11 from "../../imagens/foneBranco11.png";
 
 import foneBranco12 from "../../imagens/foneBranco01.png";
-import foneBranco13 from "../../imagens/headphone2Branco.png";
+import foneBranco13 from "../../imagens/headset.png";
 import foneBranco11 from "../../imagens/headphone3Branco.png";
 
 import Fone4 from "../../imagens/fone1.png";
@@ -25,15 +25,15 @@ import foneBranco4 from "../../imagens/headphone.png";
 
 
 
-import FineRed from "../../imagens/Macbook.jpg";
-import fonered020 from "../../imagens/fonered020.png";
+import FineRed from "../../imagens/foneRedCenter.png";
+import fonered020 from "../../imagens/foncentrlRed4.png";
 import foneRed21 from "../../imagens/foneRed21.png";
 import fonered25 from "../../imagens/fonered25.png.png";
 
-import airpods from "../../imagens/fonegreen2.png";
+import airpods from "../../imagens/foncentrlVerde2.png";
 import fonegreen13 from "../../imagens/fonegreen13.png";
 import foneGreen11 from "../../imagens/foneGreen11.png";
-import fonegreen23 from "../../imagens/fonegreen23.png";
+import fonegreen23 from "../../imagens/fonVerde2.png";
 
 
 
