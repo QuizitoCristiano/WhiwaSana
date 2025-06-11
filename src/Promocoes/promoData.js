@@ -16,9 +16,11 @@ import namorados3 from "./imagensNamorados/pmdinternacional.png";
 import namorados2 from "./imagensNamorados/namorado3.png";
 import namorados4 from "./imagensNamorados/galaxnamorado.png";
 
-// import pais1 from "./promoImages/pais1.png";
-// import pais2 from "./promoImages/pais2.png";
-// import pais3 from "./promoImages/pais3.png";
+import pais1 from "./imagenFatherDay/fathrDay2.jpg";
+import pais2 from "./imagenFatherDay/FathersDay2.png";
+import pais3 from "./imagenFatherDay/FathersDay4.png";
+import pais4 from "./imagenFatherDay/fathrDay1.jpg";
+import pais5 from "./imagenFatherDay/FathersDay1.png";
 
 // import criancas1 from "./promoImages/criancas1.png";
 // import criancas2 from "./promoImages/criancas2.png";
@@ -97,7 +99,7 @@ export const promocoes = [
     intervaloDiasDepois: 5,
     mensagemTitulo: "Descontos para heróis",
     mensagemTexto: "Presentes que seu pai vai adorar!",
-    // imagens: [pais1, pais2, pais3],
+    imagens: [pais1, pais2, pais3, pais4, pais5, ],
   },
   {
     id: "dia-das-criancas",

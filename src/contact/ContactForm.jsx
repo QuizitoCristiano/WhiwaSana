@@ -213,9 +213,7 @@ const ContactForm = () => {
         sx={{
           width: "100%",
           minHeight: "100vh", // Permite crescer
-
           marginTop: "10%",
-
           display: "flex",
           justifyContent: "center",
           alignItems: "center",

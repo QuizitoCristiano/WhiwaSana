@@ -44,7 +44,7 @@ const SlickCarousel = () => {
             key={index}
             sx={{
               position: "relative",
-              height: "400px",
+              height: "500px",
               backgroundImage: `url(${img})`,
               backgroundSize: "cover",
               backgroundPosition: "center",

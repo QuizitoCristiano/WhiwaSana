@@ -19,6 +19,7 @@ import Signup from "../Cadastro/SignUpPage";
 import Login from "../Cadastro/LoginPage";
 import RecuperarSeanha from "../Cadastro/ForgotPasswordPage";
 import AlterarSenha from "../Cadastro/UpdatePassword";
+import FilterItemForm from "../util/CardBodySearc";
 // import ControlledCarousel from "./carousel/HeadphoneImageContainer ";
 
 export const MyHome = () => {
@@ -62,7 +63,7 @@ export const MyHome = () => {
         <ControlledCarousel />
         <Testimonials />
         <Category />
-        <MapHome/>
+        <MapHome />
         <DiscoverOurHeadphones />
         <ElectronicsItemOne />
         <PromoCard />
@@ -72,20 +73,17 @@ export const MyHome = () => {
 
         <UIBlocksCards />
 
-        <ProductDetails/>
-        <ContactForm/>
+        <ProductDetails />
+        <ContactForm />
 
-
-
-        
         {/* <MyFooter /> */}
-       
-       {/* <AlterarSenha/>
+
+        {/* <AlterarSenha/>
         <RecuperarSeanha/>
           <Login/>
         <Signup/> */}
 
-        
+        <FilterItemForm />
       </Stack>
     </>
   );

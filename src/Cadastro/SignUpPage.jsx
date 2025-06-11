@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   Stack,
   Box,
@@ -24,48 +24,129 @@ import {
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 
 import XIcon from "@mui/icons-material/X";
-
+import { Link, useNavigate } from "react-router-dom";
 import PhoneIphoneIcon from "@mui/icons-material/PhoneIphone";
 import { Email, Phone } from "@mui/icons-material";
 import ReplyAllIcon from "@mui/icons-material/ReplyAll";
 import InputMask from "react-input-mask";
-
 import "../contact/ContactStyles.css";
+import { styled } from "@mui/system";
+
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  updateProfile,
+  fetchSignInMethodsForEmail,
+} from "firebase/auth";
+import {
+  addDoc,
+  collection,
+  getFirestore,
+  query,
+  where,
+  getDocs,
+  doc,
+  setDoc,
+} from "firebase/firestore";
+
+// willsonvrigiliojose@gmail.com
+// willson15#
+
+// Estilização para a tela de carregamento
+const ContainerCardLaoder = styled(Stack)(({ theme }) => ({
+  position: "fixed",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  flexDirection: "column",
+  gap: "10px",
+  color: "white",
+  backgroundColor: "rgba(0, 0, 0, 0.6)",
+  height: "100vh",
+  width: "100%",
+  zIndex: 9000,
+  top: 0,
+  left: 0,
+}));
+
+const Loader = styled(Box)(({ theme }) => ({
+  width: "48px",
+  height: "48px",
+  borderRadius: "50%",
+  display: "inline-block",
+  borderTop: "4px solid #3cb815",
+  borderRight: "4px solid transparent",
+  boxSizing: "border-box",
+  animation: "rotation 1s linear infinite",
+  position: "relative",
+}));
+
+const LoaderAfter = styled(Box)(({ theme }) => ({
+  content: "''",
+  boxSizing: "border-box",
+  position: "absolute",
+  left: 0,
+  top: 0,
+  width: "48px",
+  height: "48px",
+  borderRadius: "50%",
+  borderBottom: "4px solid #f75f1d",
+  borderLeft: "4px solid transparent",
+}));
+
+const globalStyles = `
+  @keyframes rotation {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+`;
 
 const Signup = () => {
+  const navigate = useNavigate();
+  const [myNewloading, setMyNewloading] = useState(false);
   const [showSenha, setShowSenha] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
   const [formData, setFormData] = useState({
-    name: "",
+    fullName: "",
+    password: "",
+    confirmPassword: "",
     email: "",
     telefone: "",
-    senhaPass: "",
-    confirmPassword: "",
   });
 
   const [formErrors, setFormErrors] = useState({
-    name: "",
+    fullName: "",
+    password: "",
+    confirmPassword: "",
     email: "",
     telefone: "",
-    senhaPass: "",
-    confirmPassword: "",
   });
 
-  const [telefoneUser, setTelefoneUser] = useState(""); // <--- ADICIONE ISSO
-
-  // Atualize o telefone
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    setFormData((prev) => ({ ...prev, [name]: value }));
-
-    if (formErrors[name]) {
-      setFormErrors((prev) => ({ ...prev, [name]: "" }));
-    }
+  const handleChange = (fieldName, value) => {
+    setFormData({ ...formData, [fieldName]: value });
+    setFormErrors({ ...formErrors, [fieldName]: "" });
   };
 
+  const displayError = (fieldName, message) => {
+    setFormErrors({ ...formErrors, [fieldName]: message });
+  };
+
+  const clearErrors = () => {
+    setFormErrors({
+      fullName: "",
+      password: "",
+      confirmPassword: "",
+      email: "",
+      telefone: "",
+    });
+  };
+
+  // Atualize o telefone
   const handleTelefoneChange = (e) => {
     let value = e.target.value.replace(/\D/g, "");
 
@@ -79,90 +160,175 @@ const Signup = () => {
       value = `(${value}`;
     }
 
-    setTelefoneUser(value);
+    setFormData({ ...formData, telefone: value });
+    setFormErrors({ ...formErrors, telefone: "" });
+  };
+  
 
-    setFormData((prev) => ({ ...prev, telefone: value }));
+  const validarTelefone = (telefone) => {
+  const numeros = telefone.replace(/\D/g, "");
+  return numeros.length === 10 || numeros.length === 11;
+};
 
-    if (formErrors.telefone) {
-      setFormErrors((prev) => ({ ...prev, telefone: "" }));
+
+  const validateForm = () => {
+    let errors = {};
+
+    let isValid = true;
+
+    if (
+      formData.fullName.trim() === "" ||
+      formData.fullName.split(" ").length < 2
+    ) {
+      errors.fullName = "Por favor, digite seu nome completo.";
+      isValid = false;
+    }
+
+    if (!formData.password.trim()) {
+      errors.password = "Senha é obrigatória";
+      isValid = false;
+    } else if (
+      !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/.test(
+        formData.password
+      )
+    ) {
+      errors.password =
+        "A senha deve ter 8+ caracteres com letra maiúscula, minúscula, número e símbolo";
+      isValid = false;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      errors.confirmPassword = "As senhas não coincidem.";
+      isValid = false;
+    }
+
+    if (formData.email.trim() === "" || !isValidEmail(formData.email)) {
+      errors.email = "Por favor, digite um e-mail válido.";
+      isValid = false;
+    }
+
+    if (formData.telefone.trim() === "") {
+      errors.telefone = "Por favor, informe o telefone.";
+      isValid = false;
+    } else if (!validarTelefone(formData.telefone)) {
+      errors.telefone = "Por favor, informe um telefone válido.";
+      isValid = false;
+    }
+
+    setFormErrors(errors);
+    return isValid;
+  };
+
+  const checkIfEmailExists = async (email) => {
+    const auth = getAuth();
+    try {
+      const signInMethods = await fetchSignInMethodsForEmail(auth, email);
+      return signInMethods.length > 0; // Se houver métodos de login, o e-mail já está em uso.
+    } catch (error) {
+      console.error("Erro ao verificar e-mail:", error);
+      return false;
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const errors = {};
+  const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
-    if (!formData.name.trim()) {
-      errors.name = "Informe o nome completo";
-    }
+  const handleSubmit = async (e) => {
+      e.preventDefault();
+    if (validateForm()) {
+      const auth = getAuth();
+      const firestore = getFirestore();
+      const usersCollection = collection(firestore, "users");
 
-    if (!formData.senhaPass.trim()) {
-      errors.senhaPass = "Senha é obrigatória";
-    } else if (
-      !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/.test(
-        formData.senhaPass
-      )
-    ) {
-      errors.senhaPass =
-        "A senha deve ter 8+ caracteres com letra maiúscula, minúscula, número e símbolo";
-    }
+      try {
+        setMyNewloading(true);
 
-    if (!formData.confirmPassword.trim()) {
-      errors.confirmPassword = "Confirme sua senha";
-    } else if (formData.confirmPassword !== formData.senhaPass) {
-      errors.confirmPassword = "As senhas não coincidem";
-    }
+        // Verificar se o email já está em uso
+        const emailExists = await checkIfEmailExists(formData.email);
+        if (emailExists) {
+          alert("Este e-mail já está em uso. Por favor, use outro e-mail.");
+          return;
+        }
 
-    if (!formData.email.trim()) {
-      errors.email = "E-mail é obrigatório";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.email = "Por favor, digite um e-mail válido";
-    }
+        // Criar usuário no Firebase Auth
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          formData.email,
+          formData.password
+        );
 
-    const phoneNumbers = formData.telefone.replace(/\D/g, "");
-    if (!formData.telefone || phoneNumbers.length < 11) {
-      errors.telefone = "Digite um telefone válido";
-    }
+        const user = userCredential.user;
 
-    if (Object.keys(errors).length > 0) {
-      setFormErrors(errors);
+        // Atualizar o perfil com o nome completo
+        await updateProfile(user, { displayName: formData.fullName });
+        try {
+          if (!user || !user.uid) {
+            throw new Error("Usuário não autenticado.");
+          }
+
+          const userDocRef = doc(usersCollection, user.uid);
+          await setDoc(userDocRef, {
+            id: user.uid,
+            email: formData.email,
+            fullName: formData.fullName,
+            telefone: formData.telefone,
+          });
+
+          console.log("Usuário salvo no Firestore com sucesso!");
+        } catch (error) {
+          console.error("Erro ao salvar usuário no Firestore:", error);
+        }
+
+        // Salvar dados no LocalStorage
+        localStorage.setItem("userData", JSON.stringify(formData));
+
+        alert("Usuário cadastrado com sucesso!");
+        setFormData({
+          fullName: "",
+          password: "",
+          confirmPassword: "",
+          email: "",
+          telefone: "",
+        });
+
+        navigate("/");
+      } catch (error) {
+        alert("Erro ao criar usuário: " + error.message);
+      } finally {
+        setMyNewloading(false);
+      }
     } else {
-      console.log("Formulário enviado com sucesso!", formData);
-
-      setFormData({
-        name: "",
-        email: "",
-        telefone: "",
-        senhaPass: "",
-        confirmPassword: "",
-      });
-
-      setFormErrors({
-        name: "",
-        email: "",
-        telefone: "",
-        senhaPass: "",
-        confirmPassword: "",
-      });
-
-      setTelefoneUser("");
+      console.log("Formulário inválido, corrigir erros.");
     }
   };
 
   return (
     <>
+      {myNewloading && (
+        <ContainerCardLaoder>
+          <Loader sx={{ animation: "rotation 1s linear infinite" }}>
+            <LoaderAfter />
+          </Loader>
+          <div>Logando...</div>
+        </ContainerCardLaoder>
+      )}
       <Stack
         sx={{
           width: "100%",
           minHeight: "100vh", // Permite crescer
 
-          marginTop: "10%",
+    
 
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
 
           padding: "10px",
+          background:
+            "linear-gradient(34deg, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 1) 50%)",
+          color: "white",
         }}
       >
         <Box
@@ -171,9 +337,9 @@ const Signup = () => {
             display: "flex",
             width: "100%",
 
-            minHeight: { md: "100vh" }, // altura total só em telas md+
-            alignItems: { md: "center" }, // opcional: alinha verticalmente
-            justifyContent: "space-between", // ou "center", depende do layout
+            minHeight: { md: "100vh" },
+            alignItems: { md: "center" },
+            justifyContent: "space-between",
             padding: "2rem",
             gap: "1rem",
 
@@ -344,10 +510,10 @@ const Signup = () => {
                   },
                 }}
               />
-             
             </Box>
 
             <Button
+              onClick={() => navigate("/Login")}
               sx={{
                 background: "#33bf30",
                 border: "none !important",
@@ -449,12 +615,11 @@ const Signup = () => {
                 <input
                   type="text"
                   placeholder="Digite o seu nome..."
-                  name="name" // O nome do campo deve corresponder ao estado
-                  value={formData.name}
-                  onChange={handleChange}
-                  // Remova a propriedade required se o campo de nome não for obrigatório
+                  name="fullName"
+                  value={formData.fullName}
+                  onChange={(e) => handleChange(e.target.name, e.target.value)}
                 />
-                {formErrors.name && (
+                {formErrors.fullName && (
                   <p
                     style={{
                       color: "red",
@@ -462,7 +627,7 @@ const Signup = () => {
                       marginBottom: "1rem",
                     }}
                   >
-                    {formErrors.name}
+                    {formErrors.fullName}
                   </p>
                 )}{" "}
                 {/* Exibir erro apenas se houver */}
@@ -485,7 +650,7 @@ const Signup = () => {
                     variant="outlined"
                     size="small"
                     name="telefone"
-                    value={telefoneUser}
+                    value={formData.telefone}
                     onChange={handleTelefoneChange}
                     fullWidth
                     FormHelperTextProps={{
@@ -540,9 +705,9 @@ const Signup = () => {
                   placeholder="Digite o seu E-mail"
                   name="email"
                   value={formData.email}
-                  onChange={handleChange}
-                  required
+                  onChange={(e) => handleChange(e.target.name, e.target.value)}
                 />
+
                 {formErrors.email && (
                   <p
                     style={{
@@ -570,15 +735,15 @@ const Signup = () => {
                     style={{ cursor: "pointer" }}
                   />
                 )}
+
                 <input
                   type={showSenha ? "text" : "password"}
                   placeholder="Digite sua senha"
-                  name="senhaPass"
-                  value={formData.senhaPass}
-                  onChange={handleChange}
-                  required
+                  name="password"
+                  value={formData.password}
+                  onChange={(e) => handleChange(e.target.name, e.target.value)}
                 />
-                {formErrors.senhaPass && (
+                {formErrors.password && (
                   <p
                     style={{
                       color: "red",
@@ -586,7 +751,7 @@ const Signup = () => {
                       marginBottom: "1rem",
                     }}
                   >
-                    {formErrors.senhaPass}
+                    {formErrors.password}
                   </p>
                 )}
               </div>
@@ -611,8 +776,7 @@ const Signup = () => {
                   placeholder="Digite sua senha"
                   name="confirmPassword"
                   value={formData.confirmPassword}
-                  onChange={handleChange}
-                  required
+                  onChange={(e) => handleChange(e.target.name, e.target.value)}
                 />
 
                 {formErrors.confirmPassword && (

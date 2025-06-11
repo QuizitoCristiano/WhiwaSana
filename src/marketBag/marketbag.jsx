@@ -8,6 +8,8 @@ import {
   DialogTitle,
   DialogActions,
   Snackbar,
+  DialogContent,
+  Alert,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import "./newStyle.css";
@@ -23,6 +25,20 @@ const BagMarket = ({
   const [removItemArray, setRemovItemArray] = useState(null);
   const [isWishlistModalOpen, setIsWishlistModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState(""); // Novo estado para armazenar a mensagem
+ const [openConfirm, setOpenConfirm] = useState(false)
+   const [itemToRemove, setItemToRemove] = useState(null)
+
+  const handleCancelRemove = () => {
+    setOpenConfirm(false);
+  }
+
+   const handleConfirmRemove = () => {
+    const novoItemCarinho = carinho.filter((_, i) => i !== itemToRemove);
+    setCarinho(novoItemCarinho);
+    setOpenConfirm(false);
+    setItemToRemove(null);
+  }
+
 
   const toggleWishlistModal = () => {
     setIsWishlistModalOpen((prev) => !prev);
@@ -62,16 +78,17 @@ const BagMarket = ({
   };
 
   const removerItem = (index) => {
-    const novoItemCarinho = [...carinho];
-    if (novoItemCarinho[index].quantidade > 1) {
-      novoItemCarinho[index].quantidade--;
-    } else {
-      if (window.confirm("Tem certeza que deseja remover este item?")) {
-        novoItemCarinho.splice(index, 1);
-      }
-    }
+    const item = carinho[index];
 
-    setCarinho(novoItemCarinho);
+    if(item.quantidade > 1) {
+      const novoItemCarinho = [...carinho];
+      novoItemCarinho[index].quantidade--;
+      setCarinho(novoItemCarinho);
+    } else {
+      // Se quantidade for 1, pergunta antes de remover
+      setItemToRemove(index);
+      setOpenConfirm(true);
+    }
   };
 
   const renderizarItensCarrinho = () => {
@@ -216,6 +233,8 @@ const BagMarket = ({
                   }}
                 />
               </Box>
+
+
               <Box
                 sx={{
                   display: "flex",
@@ -369,6 +388,39 @@ const BagMarket = ({
             },
           }} onClick={toggleWishlistModal} autoFocus>
             Fechar
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+
+       <Dialog
+        sx={{
+          zIndex: 3300,
+          width: '100%',
+          height: '100vh',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: 'transparent',
+          boxShadow: 'none',
+          '@media (max-width: 600px)': {
+            margin: 0,
+            borderRadius: 0,
+          },
+        }}
+        open={openConfirm}
+        onClose={handleCancelRemove}
+      >
+        <DialogTitle>Remover Item</DialogTitle>
+        <DialogContent>
+          Tem certeza que deseja remover este item do carrinho?
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelRemove} color="primary">
+            Cancelar
+          </Button>
+          <Button onClick={handleConfirmRemove} color="error">
+            Remover
           </Button>
         </DialogActions>
       </Dialog>

@@ -122,13 +122,15 @@ const handleSubmit = (e) => {
           width: "100%",
           minHeight: "100vh", // Permite crescer
 
-          marginTop: "10%",
 
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
 
           padding: "10px",
+           background:
+            "linear-gradient(34deg, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 1) 50%)",
+          color: "white",
         }}
       >
         <Box

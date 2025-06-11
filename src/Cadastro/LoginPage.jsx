@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
   Stack,
   Box,
@@ -22,78 +22,113 @@ import {
   Password,
 } from "@mui/icons-material";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
-
+import { Link, useNavigate } from "react-router-dom";
 import XIcon from "@mui/icons-material/X";
 
 import PhoneIphoneIcon from "@mui/icons-material/PhoneIphone";
 import { Email, Phone } from "@mui/icons-material";
 import ReplyAllIcon from "@mui/icons-material/ReplyAll";
 import InputMask from "react-input-mask";
-
 import "../contact/ContactStyles.css";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+} from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { AuthContext } from "../UserAuthContext/AuthContext";
+import { db, auth } from "../../firebaseconfig/firebaseconfig";
 
-const Login = () => {
- const [showSenha, setShowSenha] = useState(false);
+const SignIn = () => {
+  const navigate = useNavigate();
 
-const [formData, setFormData] = useState({
-  email: "",
-  senhaPass: "",
-});
+  const {
+    isLoggedIn,
+    setIsLoggedIn,
+    logInWithEmailAndPassword,
+    logout,
+    user,
+    loading,
+  } = useContext(AuthContext);
 
-const [formErrors, setFormErrors] = useState({
-  email: "",
-  senhaPass: "",
-});
+  const [showSenha, setShowSenha] = useState(false);
 
-const handleChange = (e) => {
-  const { name, value } = e.target;
-  setFormData((prev) => ({
-    ...prev,
-    [name]: value,
-  }));
-};
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
 
-const handleSubmit = (e) => {
-  e.preventDefault();
-  const errors = {};
+  const [formErrors, setFormErrors] = useState({
+    email: "",
+    password: "",
+  });
 
-  if (!formData.senhaPass.trim()) {
-    errors.senhaPass = "Senha é obrigatória";
-  } else if (
-    !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/.test(
-      formData.senhaPass
-    )
-  ) {
-    errors.senhaPass =
-      "A senha deve ter 8+ caracteres com letra maiúscula, minúscula, número e símbolo";
-  }
+   const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
 
-  if (!formData.email.trim()) {
-    errors.email = "E-mail é obrigatório";
-  } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-    errors.email = "Por favor, digite um e-mail válido";
-  }
+  const isFormValid = () => {
+    let valid = true;
+    const errors = { email: "", password: "" };
 
-  if (Object.keys(errors).length > 0) {
+    if (!formData.email) {
+      errors.email = "E-mail é obrigatório.";
+      valid = false;
+    }
+    // Adicione regex/email validation se quiser
+
+    if (!formData.password) {
+      errors.password = "Senha é obrigatória.";
+      valid = false;
+    }
+
     setFormErrors(errors);
-  } else {
-    console.log("Formulário enviado com sucesso!", formData);
+    return valid;
+  };
 
-    setFormData({
-      email: "",
-      senhaPass: "",
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!isFormValid()) return;
+
+    const result = await logInWithEmailAndPassword(formData.email, formData.password);
+
+    if (result.success) {
+      navigate("/");
+    } else {
+      const error = result.error;
+      if (error.message === "Usuário não encontrado no sistema.") {
+        setFormErrors(prev => ({ ...prev, email: error.message }));
+      } else if (error.code === "auth/user-not-found") {
+        setFormErrors(prev => ({
+          ...prev,
+          email: "Usuário não encontrado. Verifique o e-mail digitado.",
+        }));
+      } else if (error.code === "auth/wrong-password") {
+        setFormErrors(prev => ({
+          ...prev,
+          password: "Senha incorreta. Tente novamente.",
+        }));
+      } else {
+        setFormErrors(prev => ({
+          ...prev,
+          email: "Erro ao fazer login. Por favor, tente novamente.",
+        }));
+      }
+    }
+  };
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setIsLoggedIn(true);
+      } else {
+        setIsLoggedIn(false);
+      }
     });
 
-    setFormErrors({
-      email: "",
-      senhaPass: "",
-    });
-
-   
-  }
-};
-
-
+    return () => unsubscribe();
+  }, []);
   return (
     <>
       <Stack
@@ -101,13 +136,16 @@ const handleSubmit = (e) => {
           width: "100%",
           minHeight: "100vh", // Permite crescer
 
-          marginTop: "10%",
+
 
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
 
           padding: "10px",
+          background:
+            "linear-gradient(34deg, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 1) 50%)",
+          color: "white",
         }}
       >
         <Box
@@ -263,7 +301,7 @@ const handleSubmit = (e) => {
                   },
                 }}
               />
-             <GoogleIcon
+              <GoogleIcon
                 sx={{
                   height: "40px",
                   width: "40px",
@@ -289,10 +327,10 @@ const handleSubmit = (e) => {
                   },
                 }}
               />
-              
             </Box>
 
             <Button
+              onClick={() => navigate("/Signup")}
               sx={{
                 background: "#33bf30",
                 border: "none !important",
@@ -396,7 +434,7 @@ const handleSubmit = (e) => {
                   placeholder="Digite o seu E-mail"
                   name="email"
                   value={formData.email}
-                    onChange={handleChange}
+                  onChange={handleChange}
                   required
                 />
                 {formErrors.email && (
@@ -429,12 +467,12 @@ const handleSubmit = (e) => {
                 <input
                   type={showSenha ? "text" : "password"}
                   placeholder="Digite sua senha"
-                  name="senhaPass"
-                  value={formData.senhaPass}
-                    onChange={handleChange}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
                   required
                 />
-                {formErrors.senhaPass && (
+                {formErrors.password && (
                   <p
                     style={{
                       color: "red",
@@ -442,7 +480,7 @@ const handleSubmit = (e) => {
                       marginBottom: "1rem",
                     }}
                   >
-                    {formErrors.senhaPass}
+                    {formErrors.password}
                   </p>
                 )}
               </div>
@@ -488,4 +526,4 @@ const handleSubmit = (e) => {
   );
 };
 
-export default Login;
+export default SignIn;

@@ -98,6 +98,9 @@ const handleSubmit = (e) => {
           alignItems: "center",
 
           padding: "10px",
+           background:
+            "linear-gradient(34deg, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 1) 50%)",
+          color: "white",
         }}
       >
         <Box
