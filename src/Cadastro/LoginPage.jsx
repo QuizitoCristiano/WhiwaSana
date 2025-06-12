@@ -63,9 +63,9 @@ const SignIn = () => {
     password: "",
   });
 
-   const handleChange = (e) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const isFormValid = () => {
@@ -91,26 +91,29 @@ const SignIn = () => {
     e.preventDefault();
     if (!isFormValid()) return;
 
-    const result = await logInWithEmailAndPassword(formData.email, formData.password);
+    const result = await logInWithEmailAndPassword(
+      formData.email,
+      formData.password
+    );
 
     if (result.success) {
       navigate("/");
     } else {
       const error = result.error;
       if (error.message === "Usuário não encontrado no sistema.") {
-        setFormErrors(prev => ({ ...prev, email: error.message }));
+        setFormErrors((prev) => ({ ...prev, email: error.message }));
       } else if (error.code === "auth/user-not-found") {
-        setFormErrors(prev => ({
+        setFormErrors((prev) => ({
           ...prev,
           email: "Usuário não encontrado. Verifique o e-mail digitado.",
         }));
       } else if (error.code === "auth/wrong-password") {
-        setFormErrors(prev => ({
+        setFormErrors((prev) => ({
           ...prev,
           password: "Senha incorreta. Tente novamente.",
         }));
       } else {
-        setFormErrors(prev => ({
+        setFormErrors((prev) => ({
           ...prev,
           email: "Erro ao fazer login. Por favor, tente novamente.",
         }));
@@ -135,8 +138,6 @@ const SignIn = () => {
         sx={{
           width: "100%",
           minHeight: "100vh", // Permite crescer
-
-
 
           display: "flex",
           justifyContent: "center",
@@ -329,31 +330,72 @@ const SignIn = () => {
               />
             </Box>
 
-            <Button
-              onClick={() => navigate("/Signup")}
-              sx={{
-                background: "#33bf30",
-                border: "none !important",
-                outline: "none !important",
-                color: "#fff",
-                padding: "1rem 1rem",
-                borderRadius: "10px",
-                fontSize: "12px",
-                fontWeight: "bold",
-                cursor: "pointer",
-                marginTop: "2rem",
-                minWidth: "150px",
-                boxShadow: "0 2px 4px 0 rgba(0, 0, 0, 0.16)",
-                transition: "all 0.3s",
-                "&:hover": { background: "#3cb815" },
-                "&:disabled": { background: "#ccc" },
-                "@media (max-width: 900px)": {
-                  minWidth: "100px",
-                },
-              }}
-            >
-              Não tem conta? Bora criar uma!
-            </Button>
+            <Box sx={(themeBoxBd) => ({
+            
+              width: '100%',
+              gap:'2rem',
+              display: 'flex',
+              alignItems:'left',
+            
+              flexDirection: 'row',
+              [themeBoxBd.breakpoints.down(490)]:{
+                flexDirection:'column',
+                gap:'0.50rem',
+                  justifyContent: 'center',
+              }
+            })}>
+              <Button
+                onClick={() => navigate("/Signup")}
+                sx={{
+                  background: "#33bf30",
+                  border: "none !important",
+                  outline: "none !important",
+                  color: "#fff",
+                  padding: "1rem 1rem",
+                  borderRadius: "10px",
+                  fontSize: "12px",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                  marginTop: "1rem",
+                  minWidth: "150px",
+                  boxShadow: "0 2px 4px 0 rgba(0, 0, 0, 0.16)",
+                  transition: "all 0.3s",
+                  "&:hover": { background: "#3cb815" },
+                  "&:disabled": { background: "#ccc" },
+                  "@media (max-width: 900px)": {
+                    minWidth: "100px",
+                  },
+                }}
+              >
+                Não tem conta? Bora criar uma!
+              </Button>
+
+              <Button
+                onClick={() => navigate("/AlterarSenha")}
+                sx={{
+                  background: "#33bf30",
+                  border: "none !important",
+                  outline: "none !important",
+                  color: "#fff",
+                  padding: "1rem 1rem",
+                  borderRadius: "10px",
+                  fontSize: "12px",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                  marginTop: "1rem",
+                  minWidth: "150px",
+                  boxShadow: "0 2px 4px 0 rgba(0, 0, 0, 0.16)",
+                  transition: "all 0.3s",
+                  "&:hover": { background: "#3cb815" },
+                  "&:disabled": { background: "#ccc" },
+                  "@media (max-width: 900px)": {
+                    minWidth: "100px",
+                  },
+                }}
+              >
+                AlterarSenha
+              </Button>
+            </Box>
           </div>
 
           <Box
@@ -490,6 +532,7 @@ const SignIn = () => {
                 sx={{
                   display: "flex",
                   justifyContent: "space-between",
+                  // background: "pink",
                 }}
               >
                 <Button
@@ -517,6 +560,26 @@ const SignIn = () => {
                 >
                   Entrar
                 </Button>
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    margin: "0.40rem",
+                    padding: "0.20rem",
+                    color: "rgba(0, 0, 0, 0.5)",
+                  }}
+                >
+                  <Link
+                    to={"/RecuperarSeanha"}
+                    style={{ textDecoration: "none" }}
+                  >
+                    <Typography sx={{ color: "#fff" }}>
+                      Esqueseu a senha?
+                    </Typography>
+                  </Link>
+                </Box>
               </Box>
             </form>
           </div>

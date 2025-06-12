@@ -1,4 +1,4 @@
-import { Stack } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 import React from "react";
 import { ControlledCarousel } from "./carousel/carousel";
 import { Category } from "../componetes/catecorepage";
@@ -20,6 +20,7 @@ import Login from "../Cadastro/LoginPage";
 import RecuperarSeanha from "../Cadastro/ForgotPasswordPage";
 import AlterarSenha from "../Cadastro/UpdatePassword";
 import FilterItemForm from "../util/CardBodySearc";
+import ChatWhatsApp from "../chatWats/zap";
 // import ControlledCarousel from "./carousel/HeadphoneImageContainer ";
 
 export const MyHome = () => {
@@ -76,14 +77,10 @@ export const MyHome = () => {
         <ProductDetails />
         <ContactForm />
 
-        {/* <MyFooter /> */}
+        {/* 
+        <FilterItemForm /> */}
 
-        {/* <AlterarSenha/>
-        <RecuperarSeanha/>
-          <Login/>
-        <Signup/> */}
-
-        <FilterItemForm />
+        <ChatWhatsApp />
       </Stack>
     </>
   );

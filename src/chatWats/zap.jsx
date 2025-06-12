@@ -1,11 +1,11 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from "react";
 
 import {
   getAuth,
   createUserWithEmailAndPassword,
   updateProfile,
   fetchSignInMethodsForEmail,
-} from 'firebase/auth'
+} from "firebase/auth";
 import {
   addDoc,
   collection,
@@ -15,49 +15,56 @@ import {
   getDocs,
   doc,
   setDoc,
-} from 'firebase/firestore'
+} from "firebase/firestore";
+import { AuthContext } from "../UserAuthContext/AuthContext";
+import { db, auth } from "../../firebaseconfig/firebaseconfig";
 
+import { Box, Button, Stack, Modal, Typography } from "@mui/material";
+import WhatshotIcon from "@mui/icons-material/Whatshot";
+import SendIcon from "@mui/icons-material/Send";
+import CloseIcon from "@mui/icons-material/Close";
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
+import MicIcon from "@mui/icons-material/Mic";
+import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 
-import { Box, Button, Stack, Modal, Typography } from '@mui/material'
-import WhatshotIcon from '@mui/icons-material/Whatshot'
-import SendIcon from '@mui/icons-material/Send'
-import CloseIcon from '@mui/icons-material/Close'
-import WhatsAppIcon from '@mui/icons-material/WhatsApp'
-import MicIcon from '@mui/icons-material/Mic'
-import AddAPhotoIcon from '@mui/icons-material/AddAPhoto'
+import "./chatStyles.css";
+import { text, time } from "framer-motion/client";
 
-import './chatStyles.css'
-import { text, time } from 'framer-motion/client'
-
-export const ChatWhatsApp = () => {
-  const [isChatOpen, setIsChatOpen] = useState(false)
-  const [message, setMessage] = useState('')
+const ChatWhatsApp = () => {
+  const endOfMessagesRef = useRef(null);
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([
-    { type: 'incoming', text: 'Olá, como posso ajudá-lo hoje?' },
-  ])
-  const [isMicActive, setIsMicActive] = useState(false)
-  const [recorder, setRecorder] = useState(null)
-  const [audioBlob, setAudioBlob] = useState(null)
-  const [mediaFile, setMediaFile] = useState(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
+    { type: "incoming", text: "Olá, como posso ajudá-lo hoje?" },
+  ]);
+  const [isMicActive, setIsMicActive] = useState(false);
+  const [recorder, setRecorder] = useState(null);
+  const [audioBlob, setAudioBlob] = useState(null);
+  const [mediaFile, setMediaFile] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const toggleChat = () => setIsChatOpen((prev) => !prev)
+useEffect(() => {
+  if (endOfMessagesRef.current) {
+    endOfMessagesRef.current.scrollIntoView({ behavior: "smooth" });
+  }
+}, [messages]);
 
 
+  const toggleChat = () => setIsChatOpen((prev) => !prev);
 
   const handleMicPress = async () => {
-    setIsMicActive(true)
+    setIsMicActive(true);
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-      const newRecorder = new MediaRecorder(stream)
-      newRecorder.ondataavailable = (event) => setAudioBlob(event.data)
-      newRecorder.start()
-      setRecorder(newRecorder)
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const newRecorder = new MediaRecorder(stream);
+      newRecorder.ondataavailable = (event) => setAudioBlob(event.data);
+      newRecorder.start();
+      setRecorder(newRecorder);
     } catch (error) {
-      console.error('Erro ao acessar o microfone:', error)
-      setIsMicActive(false)
+      console.error("Erro ao acessar o microfone:", error);
+      setIsMicActive(false);
     }
-  }
+  };
 
   const handleMicRelease = async () => {
     if (recorder) {
@@ -65,182 +72,183 @@ export const ChatWhatsApp = () => {
       recorder.stream.getTracks().forEach((track) => track.stop());
       setRecorder(null);
       setIsMicActive(false);
-  
+
       if (audioBlob) {
         const audioUrl = URL.createObjectURL(audioBlob);
-  
+
         const messageData = {
           mediaUrl: audioUrl,
-          mediaType: 'audio',
-          senderId: 'user123', // Substitua pelo ID do usuário autenticado
+          mediaType: "audio",
+          senderId: "user123", // Substitua pelo ID do usuário autenticado
         };
         await mandaMessageAuFIreebase(messageData);
-  
+
         setMessages((prev) => [
           ...prev,
-          { type: 'outgoing', text: 'Áudio enviado', audio: audioUrl },
+          { type: "outgoing", text: "Áudio enviado", audio: audioUrl },
         ]);
       }
     }
   };
-  
 
   const handleMediaClick = () => {
     const options = {
-      title: 'Selecione ou tire uma foto',
+      title: "Selecione ou tire uma foto",
       options: [
-        { text: 'Abrir câmera', onClick: openCamera },
-        { text: 'Selecionar da galeria', onClick: () => openFileSelector() },
+        { text: "Abrir câmera", onClick: openCamera },
+        { text: "Selecionar da galeria", onClick: () => openFileSelector() },
       ],
-    }
+    };
 
     if (
       window.confirm(
         options.title +
-          '\n1. ' +
+          "\n1. " +
           options.options[0].text +
-          '\n2. ' +
+          "\n2. " +
           options.options[1].text
       )
     ) {
-      options.options[0].onClick()
+      options.options[0].onClick();
     } else {
-      options.options[1].onClick()
+      options.options[1].onClick();
     }
-  }
+  };
 
   const openCamera = async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true })
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
     // Aqui você deve implementar a lógica para capturar a imagem da câmera
-    console.log('Câmera aberta')
-  }
+    console.log("Câmera aberta");
+  };
 
   const openFileSelector = () => {
-    const fileInput = document.createElement('input')
-    fileInput.type = 'file'
-    fileInput.accept = 'image/*,video/*'
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "image/*,video/*";
     fileInput.onchange = (e) => {
       if (e.target.files.length) {
-        setMediaFile(e.target.files[0])
-        setIsModalOpen(true) // Abre o modal ao selecionar o arquivo
+        setMediaFile(e.target.files[0]);
+        setIsModalOpen(true); // Abre o modal ao selecionar o arquivo
       }
-    }
-    fileInput.click()
-  }
+    };
+    fileInput.click();
+  };
 
   const handleCloseModal = () => {
-    setIsModalOpen(false)
-    setMediaFile(null) // Limpa o arquivo ao cancelar
-  }
+    setIsModalOpen(false);
+    setMediaFile(null); // Limpa o arquivo ao cancelar
+  };
 
   const handleConfirmSend = async () => {
     const mediaUrl = URL.createObjectURL(mediaFile);
-    const mediaType = mediaFile.type.startsWith('image/')
-      ? 'image'
-      : mediaFile.type.startsWith('video/')
-      ? 'video'
-      : 'file';
-  
+    const mediaType = mediaFile.type.startsWith("image/")
+      ? "image"
+      : mediaFile.type.startsWith("video/")
+      ? "video"
+      : "file";
+
     const messageData = {
       mediaUrl,
       mediaType,
-      senderId: 'user123', // Substitua pelo ID do usuário autenticado
+      senderId: "user123", // Substitua pelo ID do usuário autenticado
     };
     await mandaMessageAuFIreebase(messageData);
-  
+
     setMessages((prev) => [
       ...prev,
-      { type: 'outgoing', text: 'Arquivo enviado', media: mediaUrl, mediaType },
+      { type: "outgoing", text: "Arquivo enviado", media: mediaUrl, mediaType },
     ]);
     setMediaFile(null);
     setIsModalOpen(false);
   };
-  
 
   const mandaMessageAuFIreebase = async (messageData) => {
-
-    
     try {
       const auth = getAuth();
+      const user = auth.currentUser;
+      const senderId = user ? user.uid : "anonymous";
+
       const firestore = getFirestore();
-      const messagesCollection = collection(firestore, 'userMessage');
-  
+      const messagesCollection = collection(firestore, "userMessage");
+
       await addDoc(messagesCollection, {
-        text: messageData.text || '',
-        mediaUrl: messageData.mediaUrl || '',
-        mediaType: messageData.mediaType || '',
+        text: messageData.text || "",
+        mediaUrl: messageData.mediaUrl || "",
+        mediaType: messageData.mediaType || "",
         timestamp: new Date(),
-        senderId: messageData.senderId || 'anonymous', // Substituir pelo ID do usuário autenticado
+        senderId: messageData.senderId || "anonymous", // Substituir pelo ID do usuário autenticado
       });
-  
-      console.log('Mensagem enviada ao Firestore com sucesso!');
+
+      console.log("Mensagem enviada ao Firestore com sucesso!");
     } catch (error) {
-      console.error('Erro ao enviar mensagem para o Firestore:', error);
+      console.error("Erro ao enviar mensagem para o Firestore:", error);
     }
   };
-  
 
   const handleSendMessage = async () => {
     if (message.trim()) {
       const messageData = {
         text: message,
-        senderId: 'user123', // Substitua pelo ID do usuário autenticado
+        senderId: "user123", // Substitua pelo ID do usuário autenticado
       };
       await mandaMessageAuFIreebase(messageData);
-  
-      setMessages((prev) => [...prev, { type: 'outgoing', text: message }]);
-      setMessage('');
+
+      setMessages((prev) => [...prev, { type: "outgoing", text: message }]);
+      setMessage("");
     }
-  
+
     if (mediaFile) {
       const mediaUrl = URL.createObjectURL(mediaFile);
-      const mediaType = mediaFile.type.startsWith('image/')
-        ? 'image'
-        : mediaFile.type.startsWith('video/')
-        ? 'video'
-        : 'file';
-  
+      const mediaType = mediaFile.type.startsWith("image/")
+        ? "image"
+        : mediaFile.type.startsWith("video/")
+        ? "video"
+        : "file";
+
       const messageData = {
         mediaUrl,
         mediaType,
-        senderId: 'user123', // Substitua pelo ID do usuário autenticado
+        senderId: "user123", // Substitua pelo ID do usuário autenticado
       };
       await mandaMessageAuFIreebase(messageData);
-  
+
       setMessages((prev) => [
         ...prev,
-        { type: 'outgoing', text: 'Arquivo enviado', media: mediaUrl, mediaType },
+        {
+          type: "outgoing",
+          text: "Arquivo enviado",
+          media: mediaUrl,
+          mediaType,
+        },
       ]);
       setMediaFile(null);
     }
   };
-  
-  
 
   return (
     <Stack
       sx={{
-        display: 'flex',
-        maxWidth: '1290px',
-        marginLeft: 'auto',
-        marginRight: 'auto',
-        position: 'relative',
-        alignItems: 'center',
-        justifyContent: 'center',
-        bgcolor: '#e3f2fd',
-        gap: '2rem',
-        padding: '20px 20px',
+        display: "flex",
+        maxWidth: "1290px",
+        marginLeft: "auto",
+        marginRight: "auto",
+        position: "relative",
+        alignItems: "center",
+        justifyContent: "center",
+        // bgcolor: '#e3f2fd',
+        gap: "2rem",
+        padding: "20px 20px",
       }}
     >
       <Stack className="show-chatbot">
-      <button className="chatbot-toggler" onClick={toggleChat}>
+        <button className="chatbot-toggler" onClick={toggleChat}>
           {isChatOpen ? (
             <CloseIcon
-              sx={{ fontSize: '40px', color: '#fff', cursor: 'pointer' }}
+              sx={{ fontSize: "40px", color: "#fff", cursor: "pointer" }}
             />
           ) : (
             <WhatsAppIcon
-              sx={{ fontSize: '50px', color: '#fff', cursor: 'pointer' }}
+              sx={{ fontSize: "50px", color: "#fff", cursor: "pointer" }}
             />
           )}
         </button>
@@ -249,16 +257,18 @@ export const ChatWhatsApp = () => {
           <Box className="chatbot">
             <Box
               sx={{
-                background: '#3cb815',
-                padding: '16px 0',
-                textAlign: 'center',
-                position: 'relative',
+                background: "#3cb815",
+                padding: "16px 0",
+                textAlign: "center",
+                position: "relative",
               }}
             >
-              <h2 style={{ color: '#fff', fontSize: '1.4rem' }}>
+              <h2 style={{ color: "#fff", fontSize: "1.4rem" }}>
                 Fale com agente
               </h2>
             </Box>
+
+          
 
             <ul className="chatbox">
               {messages.map((msg, index) => (
@@ -266,47 +276,49 @@ export const ChatWhatsApp = () => {
                   key={index}
                   className={`chat ${msg.type}`}
                   style={{
-                    display: 'flex',
+                    display: "flex",
                     justifyContent:
-                      msg.type === 'incoming' ? 'flex-start' : 'flex-end',
+                      msg.type === "incoming" ? "flex-start" : "flex-end",
                   }}
                 >
-                  {msg.type === 'incoming' && <WhatshotIcon />}
+                  {msg.type === "incoming" && <WhatshotIcon />}
                   {msg.audio ? (
                     <audio controls src={msg.audio}></audio>
-                  ) : msg.mediaType === 'image' ? (
+                  ) : msg.mediaType === "image" ? (
                     <img
                       src={msg.media}
                       alt="Arquivo enviado"
-                      style={{ maxWidth: '200px', margin: '5px' }}
+                      style={{ maxWidth: "200px", margin: "5px" }}
                     />
-                  ) : msg.mediaType === 'video' ? (
+                  ) : msg.mediaType === "video" ? (
                     <video
                       controls
                       src={msg.media}
-                      style={{ maxWidth: '200px', margin: '5px' }}
+                      style={{ maxWidth: "200px", margin: "5px" }}
                     />
                   ) : (
                     <p>{msg.text}</p>
                   )}
                 </li>
               ))}
+              {/* Elemento invisível para rolar até ele */}
+              <div ref={endOfMessagesRef} />
             </ul>
 
             <div className="chat-input">
               <AddAPhotoIcon
                 onClick={handleMediaClick}
                 sx={{
-                  color: '#3cb815',
-                  fontSize: '2rem',
-                  cursor: 'pointer',
-                  padding: '4px',
-                  borderRadius: '50%',
-                  backgroundColor: '#fff',
-                  boxShadow: '0 0 5px #3cb815',
-                  transition: 'box-shadow 0.3s ease',
-                  '&:hover': { boxShadow: '0 0 10px #3cb815' },
-                  '&:active': { boxShadow: '0 0 15px #3cb815' },
+                  color: "#3cb815",
+                  fontSize: "2rem",
+                  cursor: "pointer",
+                  padding: "4px",
+                  borderRadius: "50%",
+                  backgroundColor: "#fff",
+                  boxShadow: "0 0 5px #3cb815",
+                  transition: "box-shadow 0.3s ease",
+                  "&:hover": { boxShadow: "0 0 10px #3cb815" },
+                  "&:active": { boxShadow: "0 0 15px #3cb815" },
                 }}
               />
               <textarea
@@ -322,19 +334,19 @@ export const ChatWhatsApp = () => {
               >
                 {message.trim() ? (
                   <SendIcon
-                   onClick={mandaMessageAuFIreebase}
+                    onClick={mandaMessageAuFIreebase}
                     sx={{
-                      color: '#3cb815',
-                      fontSize: '2.35rem',
-                      cursor: 'pointer',
+                      color: "#3cb815",
+                      fontSize: "1.35rem",
+                      cursor: "pointer",
                     }}
                   />
                 ) : (
                   <MicIcon
                     sx={{
-                      color: isMicActive ? '#3cb815' : '#ccc',
-                      fontSize: '2.35rem',
-                      cursor: 'pointer',
+                      color: isMicActive ? "#3cb815" : "#ccc",
+                      fontSize: "2.35rem",
+                      cursor: "pointer",
                     }}
                   />
                 )}
@@ -348,65 +360,65 @@ export const ChatWhatsApp = () => {
       <Modal open={isModalOpen} onClose={handleCloseModal}>
         <Box
           sx={{
-            bgcolor: 'background.paper',
-            borderRadius: '8px',
+            bgcolor: "background.paper",
+            borderRadius: "8px",
             boxShadow: 24,
             p: 4,
             maxWidth: 450,
-            margin: 'auto',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            position: 'absolute', // Usar 'absolute' para centralizar o modal
-            top: '50%', // Posiciona o topo do modal no meio da tela
-            left: '50%', // Posiciona a esquerda do modal no meio da tela
-            transform: 'translate(-50%, -50%)', // Move o modal para o centro
-            textAlign: 'center',
+            margin: "auto",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            position: "absolute", // Usar 'absolute' para centralizar o modal
+            top: "50%", // Posiciona o topo do modal no meio da tela
+            left: "50%", // Posiciona a esquerda do modal no meio da tela
+            transform: "translate(-50%, -50%)", // Move o modal para o centro
+            textAlign: "center",
           }}
         >
           <img
-            src={mediaFile ? URL.createObjectURL(mediaFile) : ''}
+            src={mediaFile ? URL.createObjectURL(mediaFile) : ""}
             alt="Preview"
-            style={{ maxWidth: '100%', margin: '10px 0' }}
+            style={{ maxWidth: "100%", margin: "10px 0" }}
           />
 
           <h5
             style={{
               fontWeight: 800,
-              fontSize: '18px',
-              marginBottom: '20px',
-              color: 'rgb(51, 191, 48)',
+              fontSize: "18px",
+              marginBottom: "20px",
+              color: "rgb(51, 191, 48)",
             }}
           >
             Confirmar envio de mídia
           </h5>
           <Box
             sx={{
-              marginTop: '10px',
-              width: '100%',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
+              marginTop: "10px",
+              width: "100%",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
             }}
           >
             <Button
               onClick={handleCloseModal}
               sx={{
-                height: '50px',
-                width: '40%',
-                borderRadius: '15px 0px 15px 0px',
-                bgcolor: 'rgb(51, 191, 48)',
-                color: '#fff',
-                boxShadow: '20px 20px 50px rgba(0, 0, 0, 0.4)',
-                cursor: 'pointer',
-                fontSize: '15px',
-                fontWeight: 'bold',
-                transition: 'all 0.3s ease-in-out',
-                '&:hover': {
-                  boxShadow: '0 0 15px 5px #3cb815',
-                  background: '#3cb815',
-                  transform: 'scale(1.05)',
+                height: "50px",
+                width: "40%",
+                borderRadius: "15px 0px 15px 0px",
+                bgcolor: "rgb(51, 191, 48)",
+                color: "#fff",
+                boxShadow: "20px 20px 50px rgba(0, 0, 0, 0.4)",
+                cursor: "pointer",
+                fontSize: "15px",
+                fontWeight: "bold",
+                transition: "all 0.3s ease-in-out",
+                "&:hover": {
+                  boxShadow: "0 0 15px 5px #3cb815",
+                  background: "#3cb815",
+                  transform: "scale(1.05)",
                 },
               }}
             >
@@ -416,21 +428,21 @@ export const ChatWhatsApp = () => {
             <Button
               onClick={handleConfirmSend}
               sx={{
-                height: '50px',
-                width: '40%',
-                fontSize: '15px',
-                fontWeight: 'bold',
-                borderRadius: '15px 0px 15px 0px',
-                bgcolor: 'rgb(51, 191, 48)',
-                color: '#fff',
-                boxShadow: '20px 20px 50px rgba(0, 0, 0, 0.4)',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease-in-out',
-                '&:hover': {
-                  boxShadow: '0 0 15px 5px #f75f1d',
-                  background: '#3cb815',
-                  transform: 'scale(1.05)',
-                  color: '#f75f1d',
+                height: "50px",
+                width: "40%",
+                fontSize: "15px",
+                fontWeight: "bold",
+                borderRadius: "15px 0px 15px 0px",
+                bgcolor: "rgb(51, 191, 48)",
+                color: "#fff",
+                boxShadow: "20px 20px 50px rgba(0, 0, 0, 0.4)",
+                cursor: "pointer",
+                transition: "all 0.3s ease-in-out",
+                "&:hover": {
+                  boxShadow: "0 0 15px 5px #f75f1d",
+                  background: "#3cb815",
+                  transform: "scale(1.05)",
+                  color: "#f75f1d",
                 },
               }}
             >
@@ -440,5 +452,7 @@ export const ChatWhatsApp = () => {
         </Box>
       </Modal>
     </Stack>
-  )
-}
+  );
+};
+
+export default ChatWhatsApp;

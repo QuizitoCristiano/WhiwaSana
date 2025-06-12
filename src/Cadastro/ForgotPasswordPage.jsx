@@ -8,19 +8,7 @@ import {
   IconButton,
   TextField,
 } from "@mui/material";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import {
-  Person as PersonIcon,
-  Google as GoogleIcon,
-  Facebook as FacebookIcon,
-  LinkedIn as LinkedInIcon,
-  Visibility,
-  VisibilityOff,
-  JavascriptSharp,
-  Password,
-} from "@mui/icons-material";
+
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 
 import XIcon from "@mui/icons-material/X";
@@ -31,58 +19,63 @@ import ReplyAllIcon from "@mui/icons-material/ReplyAll";
 import InputMask from "react-input-mask";
 
 import "../contact/ContactStyles.css";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+} from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { AuthContext } from "../UserAuthContext/AuthContext";
+import { db, auth } from "../../firebaseconfig/firebaseconfig";
+import { useNavigate } from "react-router-dom";
+import { sendPasswordResetEmail } from "firebase/auth";
+
 
 const RecuperarSeanha = () => {
+  const Navigate = useNavigate();
 
-const [formData, setFormData] = useState({
-  email: "",
-  
-});
+  const [formData, setFormData] = useState({ email: "" });
+  const [formErrors, setFormErrors] = useState({ email: "" });
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
-const [formErrors, setFormErrors] = useState({
-  email: "",
-  
-});
-
-const handleChange = (e) => {
-  const { name, value } = e.target;
-  setFormData((prev) => ({
-    ...prev,
-    [name]: value,
-  }));
-};
-
-const handleSubmit = (e) => {
-  e.preventDefault();
-  const errors = {};
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
 
+  const handleResetRequest = async (e) => {
+    e.preventDefault();
+    setMessage("");
+    setError("");
 
-  if (!formData.email.trim()) {
-    errors.email = "E-mail é obrigatório";
-  } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-    errors.email = "Por favor, digite um e-mail válido";
-  }
+    const errors = {};
+    if (!formData.email.trim()) {
+      errors.email = "E-mail é obrigatório";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      errors.email = "Por favor, digite um e-mail válido";
+    }
 
-  if (Object.keys(errors).length > 0) {
-    setFormErrors(errors);
-  } else {
-    console.log("Formulário enviado com sucesso!", formData);
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
 
-    setFormData({
-      email: "",
-      
-    });
-
-    setFormErrors({
-      email: "",
-      
-    });
-
-   
-  }
-};
-
+    try {
+      await sendPasswordResetEmail(auth, formData.email);
+      setMessage(
+        "E-mail de redefinição enviado! Verifique sua caixa de entrada."
+      );
+      setFormData({ email: "" });
+    } catch (err) {
+      setError("Erro ao enviar e-mail. Verifique o e-mail informado.");
+      console.error(err);
+    }
+  };
 
   return (
     <>
@@ -91,14 +84,12 @@ const handleSubmit = (e) => {
           width: "100%",
           minHeight: "100vh", // Permite crescer
 
-          marginTop: "10%",
-
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
 
           padding: "10px",
-           background:
+          background:
             "linear-gradient(34deg, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 1) 50%)",
           color: "white",
         }}
@@ -121,94 +112,94 @@ const handleSubmit = (e) => {
           })}
         >
           <div className="contact-left">
-  <Stack
-    sx={{
-      display: "flex",
-      flexDirection: "row",
-      alignItems: "center",
-      marginBottom: "0.1rem",
-      width: "100%",
-    }}
-  >
-    <Box
-      sx={{
-        height: "4rem",
-        width: "1.5rem",
-        marginRight: "1.5rem",
-        backgroundColor: "#33bf30",
-        borderRadius: "20px",
-      }}
-    />
-    <Typography
-      sx={{
-        fontWeight: "800",
-        fontSize: {
-          xs: "1.2rem",
-          sm: "1.7rem",
-          md: "1.5rem",
-        },
-        color: "#3cb815",
-      }}
-    >
-      Recuperar senha 🔐
-    </Typography>
-  </Stack>
+            <Stack
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                marginBottom: "0.1rem",
+                width: "100%",
+              }}
+            >
+              <Box
+                sx={{
+                  height: "4rem",
+                  width: "1.5rem",
+                  marginRight: "1.5rem",
+                  backgroundColor: "#33bf30",
+                  borderRadius: "20px",
+                }}
+              />
+              <Typography
+                sx={{
+                  fontWeight: "800",
+                  fontSize: {
+                    xs: "1.2rem",
+                    sm: "1.7rem",
+                    md: "1.5rem",
+                  },
+                  color: "#3cb815",
+                }}
+              >
+                Recuperar senha 🔐
+              </Typography>
+            </Stack>
 
-  <Typography
-    sx={(theme) => ({
-      fontWeight: "bold",
-      color: "#fff",
-      fontSize: "1.2rem",
-      marginTop: "0.90rem",
-      [theme.breakpoints.down("md")]: {
-        fontSize: "1.1rem",
-      },
-      [theme.breakpoints.down("sm")]: {
-        fontSize: "1rem",
-      },
-    })}
-  >
-    Informe seu e-mail e siga as instruções para redefinir sua senha.
-  </Typography>
+            <Typography
+              sx={(theme) => ({
+                fontWeight: "bold",
+                color: "#fff",
+                fontSize: "1.2rem",
+                marginTop: "0.90rem",
+                [theme.breakpoints.down("md")]: {
+                  fontSize: "1.1rem",
+                },
+                [theme.breakpoints.down("sm")]: {
+                  fontSize: "1rem",
+                },
+              })}
+            >
+              Informe seu e-mail e siga as instruções para redefinir sua senha.
+            </Typography>
 
-  <ul
-    style={{
-      marginTop: "0.1rem",
-      gap: "2.5rem",
-      listStyleType: "none",
-      display: "flex",
-      flexDirection: "column",
-    }}
-  >
-    {/* Seus campos de input virão aqui */}
-  </ul>
+            <ul
+              style={{
+                marginTop: "0.1rem",
+                gap: "2.5rem",
+                listStyleType: "none",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              {/* Seus campos de input virão aqui */}
+            </ul>
 
-  <Button
-    sx={{
-      background: "#33bf30",
-      border: "none !important",
-      outline: "none !important",
-      color: "#fff",
-      padding: "1rem 1rem",
-      borderRadius: "10px",
-      fontSize: "12px",
-      fontWeight: "bold",
-      cursor: "pointer",
-      marginTop: "2rem",
-      minWidth: "150px",
-      boxShadow: "0 2px 4px 0 rgba(0, 0, 0, 0.16)",
-      transition: "all 0.3s",
-      "&:hover": { background: "#3cb815" },
-      "&:disabled": { background: "#ccc" },
-      "@media (max-width: 900px)": {
-        minWidth: "100px",
-      },
-    }}
-  >
-    Voltar para login
-  </Button>
-</div>
-
+            <Button
+              onClick={() => Navigate("/SignIn")}
+              sx={{
+                background: "#33bf30",
+                border: "none !important",
+                outline: "none !important",
+                color: "#fff",
+                padding: "1rem 1rem",
+                borderRadius: "10px",
+                fontSize: "12px",
+                fontWeight: "bold",
+                cursor: "pointer",
+                marginTop: "2rem",
+                minWidth: "150px",
+                boxShadow: "0 2px 4px 0 rgba(0, 0, 0, 0.16)",
+                transition: "all 0.3s",
+                "&:hover": { background: "#3cb815" },
+                "&:disabled": { background: "#ccc" },
+                "@media (max-width: 900px)": {
+                  minWidth: "100px",
+                },
+              }}
+            >
+              Voltar para login
+            </Button>
+          </div>
 
           <Box
             sx={{
@@ -280,7 +271,7 @@ const handleSubmit = (e) => {
           </Box>
 
           <div className="contact-right">
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleResetRequest}>
               <div className="input_container">
                 <ReplyAllIcon className="iconField" />
                 <input
@@ -288,22 +279,18 @@ const handleSubmit = (e) => {
                   placeholder="Digite o seu E-mail"
                   name="email"
                   value={formData.email}
-                    onChange={handleChange}
+                  onChange={handleChange}
                   required
                 />
-                {formErrors.email && (
-                  <p
-                    style={{
-                      color: "red",
-                      fontSize: "1rem",
-                      marginBottom: "1rem",
-                    }}
-                  >
-                    {formErrors.email}
-                  </p>
+                {message && (
+                  <Typography sx={{ color: "green", mt: 1 }}>
+                    {message}
+                  </Typography>
+                )}
+                {error && (
+                  <Typography sx={{ color: "red", mt: 1}}>{error}</Typography>
                 )}
               </div>
-
 
               {/* Exibir erro apenas se houver */}
               <Box

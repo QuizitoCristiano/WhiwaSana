@@ -31,21 +31,32 @@ import ReplyAllIcon from "@mui/icons-material/ReplyAll";
 import InputMask from "react-input-mask";
 
 import "../contact/ContactStyles.css";
+import {
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  updatePassword,
+} from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../UserAuthContext/AuthContext";
+
+import { db, auth } from "../../firebaseconfig/firebaseconfig";
 
 const AlterarSenha = () => {
+  const { user, isLoggedIn, logout } = useAuth();
+  const navigate = useNavigate();
   const [showAticaSenha, setShowAticaSenha] = useState(false);
   const [showSenha, setShowSenha] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
   const [formData, setFormData] = useState({
     degiteAsenhaAntica: "",
-    senhaPass: "",
+    Password: "",
     confirmPassword: "",
   });
 
   const [formErrors, setFormErrors] = useState({
     degiteAsenhaAntica: "",
-    senhaPass: "",
+    Password: "",
     confirmPassword: "",
   });
 
@@ -59,61 +70,81 @@ const AlterarSenha = () => {
     }
   };
 
-const handleSubmit = (e) => {
-  e.preventDefault();
-  const errors = {};
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const errors = {};
 
-  if (!formData.degiteAsenhaAntica.trim()) {
-    errors.degiteAsenhaAntica = "Senha antiga é obrigatória";
-  }
+    // Validações
+    if (!formData.degiteAsenhaAntica.trim()) {
+      errors.degiteAsenhaAntica = "Senha antiga é obrigatória";
+    }
 
-  if (!formData.senhaPass.trim()) {
-    errors.senhaPass = "Senha é obrigatória";
-  } else if (
-    !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/.test(formData.senhaPass)
-  ) {
-    errors.senhaPass =
-      "A senha deve ter 8+ caracteres com letra maiúscula, minúscula, número e símbolo";
-  }
+    if (!formData.Password.trim()) {
+      errors.Password = "Senha é obrigatória";
+    } else if (
+      !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/.test(
+        formData.Password
+      )
+    ) {
+      errors.Password =
+        "A senha deve ter 8+ caracteres com letra maiúscula, minúscula, número e símbolo";
+    }
 
-  if (!formData.confirmPassword.trim()) {
-    errors.confirmPassword = "Confirme sua senha";
-  } else if (formData.confirmPassword !== formData.senhaPass) {
-    errors.confirmPassword = "As senhas não coincidem";
-  }
+    if (!formData.confirmPassword.trim()) {
+      errors.confirmPassword = "Confirme sua senha";
+    } else if (formData.confirmPassword !== formData.Password) {
+      errors.confirmPassword = "As senhas não coincidem";
+    }
 
-  // Verifica se nova senha é igual à antiga
-  if (
-    formData.degiteAsenhaAntica &&
-    formData.degiteAsenhaAntica === formData.senhaPass &&
-    formData.degiteAsenhaAntica === formData.confirmPassword
-  ) {
-    errors.senhaPass = "A nova senha deve ser diferente da senha antiga";
-    errors.confirmPassword = "A nova senha deve ser diferente da senha antiga";
-  }
+    if (
+      formData.degiteAsenhaAntica &&
+      formData.degiteAsenhaAntica === formData.Password &&
+      formData.degiteAsenhaAntica === formData.confirmPassword
+    ) {
+      errors.Password = "A nova senha deve ser diferente da senha antiga";
+      errors.confirmPassword =
+        "A nova senha deve ser diferente da senha antiga";
+    }
 
-  if (Object.keys(errors).length > 0) {
-    setFormErrors(errors);
-  } else {
-    console.log("Formulário enviado com sucesso!", formData);
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
 
-    setFormData({
-      degiteAsenhaAntica: "",
-      senhaPass: "",
-      confirmPassword: "",
-    });
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
 
-    setFormErrors({
-      degiteAsenhaAntica: "",
-      senhaPass: "",
-      confirmPassword: "",
-    });
+    try {
+      if (!user || !user.email) {
+        console.error("Usuário não encontrado ou sem email.");
+        alert("Erro ao identificar usuário. Faça login novamente.");
+        return;
+      }
 
-    setSuccessMessage("Senha atualizada com sucesso!");
-    setTimeout(() => setSuccessMessage(""), 3000);
-  }
-};
+      const credential = EmailAuthProvider.credential(
+        user.email,
+        formData.degiteAsenhaAntica
+      );
 
+      await reauthenticateWithCredential(auth.currentUser, credential);
+      await updatePassword(auth.currentUser, formData.Password);
+
+      await logout();
+      navigate("/SignIn");
+    } catch (error) {
+      console.error("Erro ao alterar senha:", error.message);
+      if (error.code === "auth/wrong-password") {
+        setFormErrors({
+          ...formErrors,
+          degiteAsenhaAntica: "Senha antiga incorreta.",
+        });
+      } else {
+        alert("Erro ao atualizar senha. Tente novamente.");
+      }
+    }
+  };
 
   return (
     <>
@@ -122,13 +153,12 @@ const handleSubmit = (e) => {
           width: "100%",
           minHeight: "100vh", // Permite crescer
 
-
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
 
           padding: "10px",
-           background:
+          background:
             "linear-gradient(34deg, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 1) 50%)",
           color: "white",
         }}
@@ -261,7 +291,8 @@ const handleSubmit = (e) => {
             </ul>
 
             <Button
-              sx={{
+             onClick={() => navigate("/SignIn")}
+                sx={{
                 background: "#33bf30",
                 border: "none !important",
                 outline: "none !important",
@@ -409,12 +440,12 @@ const handleSubmit = (e) => {
                 <input
                   type={showSenha ? "text" : "password"}
                   placeholder="Digite sua senha"
-                  name="senhaPass"
-                  value={formData.senhaPass}
+                  name="Password"
+                  value={formData.Password}
                   onChange={handleChange}
                   required
                 />
-                {formErrors.senhaPass && (
+                {formErrors.Password && (
                   <p
                     style={{
                       color: "red",
@@ -422,7 +453,7 @@ const handleSubmit = (e) => {
                       marginBottom: "1rem",
                     }}
                   >
-                    {formErrors.senhaPass}
+                    {formErrors.Password}
                   </p>
                 )}
               </div>

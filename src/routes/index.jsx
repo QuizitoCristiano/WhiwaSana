@@ -12,6 +12,7 @@ import AlterarSenha from "../Cadastro/UpdatePassword";
 import RecuperarSeanha from "../Cadastro/ForgotPasswordPage";
 import SignIn from "../Cadastro/LoginPage";
 import { AuthContext } from "../UserAuthContext/AuthContext";
+import VerificarCodigo from "../Cadastro/VerifyCodePage";
 
 // 🔒 **Componente para rotas protegidas**
 const ProtectedRoute = ({ children }) => {
@@ -40,11 +41,16 @@ export const MainRoutes = () => {
         <Route path="/PromocoesPage" element={<PromocoesPage />} />
       </Route>
 
+
+
       {/* Rotas públicas */}
       <Route path="/Login" element={<SignIn />} />
       <Route path="/Signup" element={<Signup />} />
       <Route path="/AlterarSenha" element={<AlterarSenha />} />
       <Route path="/RecuperarSeanha" element={<RecuperarSeanha />} />
+        <Route path="/VerificarCodigo" element={<VerificarCodigo />} />
+
+      
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to={isLoggedIn ? "/" : "/Login"} />} />

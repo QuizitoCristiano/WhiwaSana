@@ -118,6 +118,29 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("isLoggedIn");
   };
 
+  // dentro do AuthContext.jsx (ou onde gerencia a auth)
+
+  const enviarCodigoVerificacao = async (userEmail, userId) => {
+    const novoCodigo = Math.floor(
+      10000000 + Math.random() * 90000000
+    ).toString();
+
+    await setDoc(doc(db, "codigoVerificacao", userId), {
+      codigoVerificacao: novoCodigo,
+      expiracao: new Date(Date.now() + 15 * 60 * 1000), // 15 minutos de validade
+    });
+
+    // Chama sua função que envia o email, que precisa estar implementada
+    const result = await enviarCodigoVerificacaoFirebase({
+      email: userEmail,
+      codigo: novoCodigo,
+    });
+
+    return result;
+  };
+
+  // depois exporte junto com outras funções/contexto
+
   return (
     <AuthContext.Provider
       value={{
@@ -128,6 +151,7 @@ export const AuthProvider = ({ children }) => {
         setLoading,
         user,
         loading,
+        enviarCodigoVerificacao,
       }}
     >
       {children}
@@ -144,3 +168,9 @@ export const useAuth = () => useContext(AuthContext);
 // liZania23#
 
 // liZani3@
+
+// Licani3@
+
+// kizitocristiano@gmail.com
+// Quizit1@
+// Quizit@2
