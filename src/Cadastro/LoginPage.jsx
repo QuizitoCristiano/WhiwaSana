@@ -36,7 +36,7 @@ import {
   onAuthStateChanged,
 } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
-import { AuthContext } from "../UserAuthContext/AuthContext";
+import { useAuth } from "../UserAuthContext/AuthContext";
 import { db, auth } from "../../firebaseconfig/firebaseconfig";
 
 const SignIn = () => {
@@ -47,12 +47,13 @@ const SignIn = () => {
     setIsLoggedIn,
     logInWithEmailAndPassword,
     logout,
+    loginWithGoogle,
     user,
     loading,
-  } = useContext(AuthContext);
+  } = useAuth();
 
   const [showSenha, setShowSenha] = useState(false);
-
+  const [error, setError] = useState("");
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -85,6 +86,18 @@ const SignIn = () => {
 
     setFormErrors(errors);
     return valid;
+  };
+
+  const handleGoogleLogin = async () => {
+    const result = await loginWithGoogle();
+
+    if (result.success) {
+      // Redireciona para a página principal ou dashboard;
+      navigate("/Home");
+    } else {
+      setError("Erro ao fazer login com o Google. Tente novamente.");
+      console.error("Detalhes do erro:", result.error);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -132,6 +145,7 @@ const SignIn = () => {
 
     return () => unsubscribe();
   }, []);
+
   return (
     <>
       <Stack
@@ -303,6 +317,7 @@ const SignIn = () => {
                 }}
               />
               <GoogleIcon
+                onClick={handleGoogleLogin}
                 sx={{
                   height: "40px",
                   width: "40px",
@@ -315,6 +330,9 @@ const SignIn = () => {
                   },
                 }}
               />
+              {error && (
+                <p style={{ color: "red", fontSize: "1.4rem" }}>{error}</p>
+              )}
               <FacebookIcon
                 sx={{
                   height: "40px",
@@ -330,20 +348,21 @@ const SignIn = () => {
               />
             </Box>
 
-            <Box sx={(themeBoxBd) => ({
-            
-              width: '100%',
-              gap:'2rem',
-              display: 'flex',
-              alignItems:'left',
-            
-              flexDirection: 'row',
-              [themeBoxBd.breakpoints.down(490)]:{
-                flexDirection:'column',
-                gap:'0.50rem',
-                  justifyContent: 'center',
-              }
-            })}>
+            <Box
+              sx={(themeBoxBd) => ({
+                width: "100%",
+                gap: "2rem",
+                display: "flex",
+                alignItems: "left",
+
+                flexDirection: "row",
+                [themeBoxBd.breakpoints.down(490)]: {
+                  flexDirection: "column",
+                  gap: "0.50rem",
+                  justifyContent: "center",
+                },
+              })}
+            >
               <Button
                 onClick={() => navigate("/Signup")}
                 sx={{

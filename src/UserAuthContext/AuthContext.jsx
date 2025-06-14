@@ -139,6 +139,35 @@ export const AuthProvider = ({ children }) => {
     return result;
   };
 
+  const loginWithGoogle = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      const userDocRef = doc(db, "users", user.uid);
+      const userSnapshot = await getDoc(userDocRef);
+
+      if (!userSnapshot.exists()) {
+        await setDoc(userDocRef, {
+          id: user.uid,
+          email: user.email,
+          name: user.displayName,
+          createdAt: new Date(),
+        });
+      }
+
+      const updatedUser = (await getDoc(userDocRef)).data();
+      localStorage.setItem("newUser", JSON.stringify(updatedUser));
+      localStorage.setItem("isLoggedIn", "true");
+      setUser(updatedUser);
+      setIsLoggedIn(true);
+      return { success: true };
+    } catch (error) {
+      console.error("Erro no login com Google:", error);
+      return { success: false, error };
+    }
+  };
+
   // depois exporte junto com outras funções/contexto
 
   return (
@@ -152,6 +181,7 @@ export const AuthProvider = ({ children }) => {
         user,
         loading,
         enviarCodigoVerificacao,
+        loginWithGoogle,
       }}
     >
       {children}
@@ -174,3 +204,5 @@ export const useAuth = () => useContext(AuthContext);
 // kizitocristiano@gmail.com
 // Quizit1@
 // Quizit@2
+
+// quizitocritiano@10gmail.com

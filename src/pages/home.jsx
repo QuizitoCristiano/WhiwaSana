@@ -21,6 +21,7 @@ import RecuperarSeanha from "../Cadastro/ForgotPasswordPage";
 import AlterarSenha from "../Cadastro/UpdatePassword";
 import FilterItemForm from "../util/CardBodySearc";
 import ChatWhatsApp from "../chatWats/zap";
+import ChatWhatsAppTxet from "../chatWats/ChateText";
 // import ControlledCarousel from "./carousel/HeadphoneImageContainer ";
 
 export const MyHome = () => {
@@ -81,6 +82,7 @@ export const MyHome = () => {
         <FilterItemForm /> */}
 
         <ChatWhatsApp />
+        {/* <ChatWhatsAppTxet/> */}
       </Stack>
     </>
   );

@@ -1,20 +1,20 @@
-
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
+import { getStorage } from "firebase/storage"; // ✅ Adicionado
 
 const firebaseConfig = {
   apiKey: "AIzaSyDR6pvj4ubW0Z743rCizkeEUhKKHue5n7w",
   authDomain: "whiwasana.firebaseapp.com",
   databaseURL: "https://whiwasana-default-rtdb.firebaseio.com",
   projectId: "whiwasana",
+  storageBucket: "whiwasana.appspot.com", // ✅ Corrigido o domínio do bucket
   storageBucket: "whiwasana.firebasestorage.app",
   messagingSenderId: "946140755894",
   appId: "1:946140755894:web:cafe5d1ac5ecbadcbef317",
-  measurementId: "G-8FN1JDJSF5"
+  measurementId: "G-8FN1JDJSF5",
 };
-
 
 // Inicializa o app
 const app = initializeApp(firebaseConfig);
@@ -23,9 +23,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 const analytics = getAnalytics(app);
+const storage = getStorage(app); // ✅ Inicializando o Storage
 
 // Exportações
-export { db, auth, analytics };
-
-
-
+export { db, auth, analytics, storage }; // ✅ Agora storage é exportado
