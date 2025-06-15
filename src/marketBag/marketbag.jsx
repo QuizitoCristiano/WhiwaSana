@@ -14,31 +14,28 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import "./newStyle.css";
 import { GlobalContext } from "../contexto_global/useContextGlobal";
+import { useNavigate } from "react-router-dom";
 
-const BagMarket = ({
- 
-  setSacola,
-  
-}) => {
+const BagMarket = ({ setSacola }) => {
   const { carinho, setCarinho } = useContext(GlobalContext);
   const [sacolaAberta, setSacolaAberta] = useState(false);
   const [removItemArray, setRemovItemArray] = useState(null);
   const [isWishlistModalOpen, setIsWishlistModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState(""); // Novo estado para armazenar a mensagem
- const [openConfirm, setOpenConfirm] = useState(false)
-   const [itemToRemove, setItemToRemove] = useState(null)
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [itemToRemove, setItemToRemove] = useState(null);
+  const navigate = useNavigate();
 
   const handleCancelRemove = () => {
     setOpenConfirm(false);
-  }
+  };
 
-   const handleConfirmRemove = () => {
+  const handleConfirmRemove = () => {
     const novoItemCarinho = carinho.filter((_, i) => i !== itemToRemove);
     setCarinho(novoItemCarinho);
     setOpenConfirm(false);
     setItemToRemove(null);
-  }
-
+  };
 
   const toggleWishlistModal = () => {
     setIsWishlistModalOpen((prev) => !prev);
@@ -71,7 +68,7 @@ const BagMarket = ({
   const removerItemIcon = (index) => {
     setRemovItemArray(index);
     setTimeout(() => {
-      const novoItemCarinho = carinho.filter((_, i) => i !== index); 
+      const novoItemCarinho = carinho.filter((_, i) => i !== index);
       setCarinho(novoItemCarinho);
       setRemovItemArray(null);
     }, 2000);
@@ -80,7 +77,7 @@ const BagMarket = ({
   const removerItem = (index) => {
     const item = carinho[index];
 
-    if(item.quantidade > 1) {
+    if (item.quantidade > 1) {
       const novoItemCarinho = [...carinho];
       novoItemCarinho[index].quantidade--;
       setCarinho(novoItemCarinho);
@@ -234,7 +231,6 @@ const BagMarket = ({
                 />
               </Box>
 
-
               <Box
                 sx={{
                   display: "flex",
@@ -372,38 +368,65 @@ const BagMarket = ({
       {/* Modal de confirmação */}
       <Dialog open={isWishlistModalOpen} onClose={toggleWishlistModal}>
         <DialogTitle sx={{ fontWeight: 700 }}>{modalMessage}</DialogTitle>
-        <DialogActions>
-          <Button sx={{
-            color: "white",
-            border: "none",
-            padding: "10px 15px",
-            cursor: "pointer",
-            borderRadius: "5px",
-            fontSize: "0.60rem",
-            fontWeight: "600",
-            bgcolor: "var(--green-color)",
 
-            ":hover": {
-              backgroundColor: "var(--orange-color)",
-            },
-          }} onClick={toggleWishlistModal} autoFocus>
-            Fechar
+        <DialogActions sx={{ display: "flex", gap: "1rem", padding: "1rem" }}>
+          {/* Botão de Fechar */}
+          <Button
+            sx={{
+              color: "white",
+              border: "none",
+              padding: "10px 15px",
+              cursor: "pointer",
+              borderRadius: "5px",
+              fontSize: "0.60rem",
+              fontWeight: "600",
+              bgcolor: "var(--green-color)",
+              ":hover": {
+                backgroundColor: "var(--orange-color)",
+              },
+            }}
+            onClick={toggleWishlistModal}
+            autoFocus
+          >
+            Voltar
+          </Button>
+
+          {/* Botão para ir ao Formulário */}
+          <Button
+            sx={{
+              color: "white",
+              border: "none",
+              padding: "10px 15px",
+              cursor: "pointer",
+              borderRadius: "5px",
+              fontSize: "0.60rem",
+              fontWeight: "600",
+              bgcolor: "var(--green-color)",
+              ":hover": {
+                backgroundColor: "var(--orange-color)",
+              },
+            }}
+            onClick={() => {
+              toggleWishlistModal();
+              navigate("/FormularioEntrega");
+            }}
+          >
+            Preencher Entrega
           </Button>
         </DialogActions>
       </Dialog>
 
-
-       <Dialog
+      <Dialog
         sx={{
           zIndex: 3300,
-          width: '100%',
-          height: '100vh',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: 'transparent',
-          boxShadow: 'none',
-          '@media (max-width: 600px)': {
+          width: "100%",
+          height: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "transparent",
+          boxShadow: "none",
+          "@media (max-width: 600px)": {
             margin: 0,
             borderRadius: 0,
           },

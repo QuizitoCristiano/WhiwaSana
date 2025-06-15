@@ -13,6 +13,7 @@ import RecuperarSeanha from "../Cadastro/ForgotPasswordPage";
 import SignIn from "../Cadastro/LoginPage";
 import { AuthContext } from "../UserAuthContext/AuthContext";
 import VerificarCodigo from "../Cadastro/VerifyCodePage";
+import FormularioEntrega from "../util/CardBodySearc";
 
 // 🔒 **Componente para rotas protegidas**
 const ProtectedRoute = ({ children }) => {
@@ -39,6 +40,8 @@ export const MainRoutes = () => {
         <Route path="/" element={<MyHome />} />
         <Route path="/AlmadaWhiwaSana" element={<AlmadaWhiwaSana />} />
         <Route path="/PromocoesPage" element={<PromocoesPage />} />
+        <Route path="/FormularioEntrega" element={<FormularioEntrega />} />
+         
       </Route>
 
 

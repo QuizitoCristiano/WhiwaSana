@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+ import React, { useState, useEffect } from "react";
 import {
   Box,
   Stack,
@@ -9,22 +9,18 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
+
+import InputMask from "react-input-mask";
+import { CardStylSearche } from "./CardStyles";
+import { collection, addDoc } from "firebase/firestore";
 import {
   formatTelefone,
   fetchAddressByPostalCode,
   validateDeliveryData,
 } from "./validateDeliveryData";
-import InputMask from "react-input-mask";
-import { CardStylSearche } from "./CardStyles";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../../firebaseconfig/firebaseconfig";
-import { GlobalContext } from "../contexto_global/useContextGlobal";
-import { useAuth } from "../UserAuthContext/AuthContext";
 
 const FormularioEntrega = () => {
-  const { carinho } = useContext(GlobalContext); // pega o carrinho do contexto global
-  const { user } = useAuth(); // pega o usuário logado do contexto Auth
-
   const [formData, setFormData] = useState({
     nomeCompleto: "",
     email: "",
@@ -45,7 +41,6 @@ const FormularioEntrega = () => {
   const [snackbarMsg, setSnackbarMsg] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
-  // Função para atualizar campos do formulário
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     setFormErrors((prev) => ({ ...prev, [field]: "" }));
@@ -56,95 +51,57 @@ const FormularioEntrega = () => {
     handleChange("telefone", formatted);
   };
 
-  
-    const handleCheckPostalCode = async () => {
-      if (!formData.country) {
-        setFormErrors((prev) => ({
-          ...prev,
-          cep: "Selecione o país antes do CEP",
-        }));
-        return;
-      }
-  
-      try {
-        const data = await fetchAddressByPostalCode(
-          formData.cep,
-          formData.country
-        );
-        setFormData((prev) => ({
-          ...prev,
-          rua: data.rua,
-          bairro: data.bairro,
-          cidade: data.cidade,
-          estado: data.estado,
-          country: data.country,
-        }));
-        setFormErrors((prev) => ({ ...prev, cep: "" }));
-      } catch (error) {
-        setFormErrors((prev) => ({
-          ...prev,
-          cep: error.message,
-        }));
-      }
-    };
+  const handleCheckPostalCode = async () => {
+    if (!formData.country) {
+      setFormErrors((prev) => ({
+        ...prev,
+        cep: "Selecione o país antes do CEP",
+      }));
+      return;
+    }
 
-
-
-
-  // Validação simples (você pode usar sua função validateDeliveryData)
-  const validate = () => {
-    const errors = {};
-    if (!formData.nomeCompleto) errors.nomeCompleto = "Nome é obrigatório";
-    if (!formData.email) errors.email = "Email é obrigatório";
-    // ... outras validações
-
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
+    try {
+      const data = await fetchAddressByPostalCode(
+        formData.cep,
+        formData.country
+      );
+      setFormData((prev) => ({
+        ...prev,
+        rua: data.rua,
+        bairro: data.bairro,
+        cidade: data.cidade,
+        estado: data.estado,
+        country: data.country,
+      }));
+      setFormErrors((prev) => ({ ...prev, cep: "" }));
+    } catch (error) {
+      setFormErrors((prev) => ({
+        ...prev,
+        cep: error.message,
+      }));
+    }
   };
 
-  // Envio do formulário
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const { isValid, errors } = validateDeliveryData(formData);
 
-    if (!validate()) {
+    if (!isValid) {
+      setFormErrors(errors);
       setSnackbarSeverity("error");
-      setSnackbarMsg("Por favor, corrija os erros do formulário.");
-      setOpenSnackbar(true);
-      return;
-    }
-
-    if (!user) {
-      setSnackbarSeverity("error");
-      setSnackbarMsg("Você precisa estar logado para fazer um pedido.");
-      setOpenSnackbar(true);
-      return;
-    }
-
-    if (!carinho || carinho.length === 0) {
-      setSnackbarSeverity("error");
-      setSnackbarMsg("Seu carrinho está vazio.");
+      setSnackbarMsg("Corrija os erros no formulário.");
       setOpenSnackbar(true);
       return;
     }
 
     try {
-      await addDoc(collection(db, "pedidos"), {
-        dadosEntrega: formData,
-        produtos: carinho,
-        usuario: {
-          id: user.id || user.uid,
-          nome: user.name || user.displayName || "",
-          email: user.email || "",
-        },
-        status: "Pendente",
-        createdAt: serverTimestamp(),
+      await addDoc(collection(db, "enderecosEntrega"), {
+        ...formData,
+        createdAt: new Date(),
       });
-
       setSnackbarSeverity("success");
-      setSnackbarMsg("Pedido enviado com sucesso!");
+      setSnackbarMsg("Dados enviados com sucesso!");
       setOpenSnackbar(true);
-
-      // Limpa formulário e carrinho se quiser
       setFormData({
         nomeCompleto: "",
         email: "",
@@ -159,16 +116,14 @@ const FormularioEntrega = () => {
         referencia: "",
         country: "",
       });
-      // Também pode limpar o carrinho aqui se quiser, usando setCarinho([]) do contexto global
     } catch (error) {
-      console.error("Erro ao enviar pedido:", error);
+      console.log(error);
       setSnackbarSeverity("error");
-      setSnackbarMsg("Erro ao enviar pedido. Tente novamente.");
+      setSnackbarMsg("Erro ao enviar dados.");
       setOpenSnackbar(true);
     }
-  };
-
-  return (
+  }
+return (
     <>
       <Stack
         sx={{

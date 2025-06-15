@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { Box, Button, Stack, Modal } from "@mui/material";
 import WhatshotIcon from "@mui/icons-material/Whatshot";
 import SendIcon from "@mui/icons-material/Send";
@@ -8,7 +8,12 @@ import MicIcon from "@mui/icons-material/Mic";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from "@mui/material";
 
 import "./chatStyles.css";
 
@@ -17,6 +22,7 @@ const mensagensAutomaticas = [
 ];
 
 const ChatWhatsApp = () => {
+  
   const messagesEndRef = useRef(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [message, setMessage] = useState("");
@@ -59,10 +65,7 @@ const ChatWhatsApp = () => {
     saveMessagesToLocalStorage(updatedMessages);
   };
 
-
-    const [selectedMessageIndex, setSelectedMessageIndex] = useState(null);
-
-  
+  const [selectedMessageIndex, setSelectedMessageIndex] = useState(null);
 
   // Funções chamadas ao clicar no modal
   const onEdit = () => {
@@ -74,9 +77,6 @@ const ChatWhatsApp = () => {
     handleDeleteMessage(selectedMessageIndex);
     handleCloseModal();
   };
-
-
-
 
   // Adicione um novo estado para controlar o índice da mensagem automática
   const [automaticMessageIndex, setAutomaticMessageIndex] = useState(0);
@@ -254,7 +254,7 @@ const ChatWhatsApp = () => {
         <button className="chatbot-toggler" onClick={toggleChat}>
           {isChatOpen ? (
             <CloseIcon
-              sx={{ fontSize: "40px", color: "#fff", cursor: "pointer" }}
+              sx={{ fontSize: "30px", color: "#fff", cursor: "pointer" }}
             />
           ) : (
             <WhatsAppIcon
@@ -354,10 +354,11 @@ const ChatWhatsApp = () => {
                   padding: "4px",
                   borderRadius: "50%",
                   backgroundColor: "#fff",
-                  boxShadow: "0 0 5px #d90429",
-                  transition: "box-shadow 0.3s ease",
-                  "&:hover": { boxShadow: "0 0 15px #d90429" },
-                  "&:active": { boxShadow: "0 0 15px #d90429" },
+                
+                  boxShadow: '0 0 5px #3cb815',
+                  transition: 'box-shadow 0.3s ease',
+                  '&:hover': { boxShadow: '0 0 10px #3cb815' },
+                  '&:active': { boxShadow: '0 0 15px #3cb815' },
                 }}
               />
               <textarea
@@ -410,10 +411,6 @@ const ChatWhatsApp = () => {
       </Stack>
 
       {/* Modal para confirmar o envio da imagem ou vídeo */}
-
-       
-
-
 
       <Modal open={isModalOpen} onClose={handleCloseModal}>
         <Box
