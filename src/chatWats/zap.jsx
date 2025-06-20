@@ -1,13 +1,19 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
-import { Box, Button, Stack, Modal } from "@mui/material";
-import WhatshotIcon from "@mui/icons-material/Whatshot";
-import SendIcon from "@mui/icons-material/Send";
-import CloseIcon from "@mui/icons-material/Close";
-import WhatsAppIcon from "@mui/icons-material/WhatsApp";
-import MicIcon from "@mui/icons-material/Mic";
-import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
+
+import {
+  onSnapshot,
+  query,
+  collection,
+  orderBy,
+  addDoc,
+  serverTimestamp,
+  doc,
+  updateDoc,
+  deleteDoc,
+  getFirestore,
+  where, // 🔥 Importa aqui
+} from "firebase/firestore";
+
 import {
   Dialog,
   DialogActions,
@@ -16,177 +22,226 @@ import {
 } from "@mui/material";
 
 import "./chatStyles.css";
+import { db } from "../../firebaseconfig/firebaseconfig";
 
-const mensagensAutomaticas = [
-  "Oi, meu querido! Bom dia! 😊 Como você está? Você está falando com Cristiano Asistente virtual da WhiwaSana. Como posso te ajudar hoje?",
-];
+import { Box, Button, Modal, Stack } from "@mui/material";
+import {
+  Close as CloseIcon,
+  WhatsApp as WhatsAppIcon,
+  Whatshot as WhatshotIcon,
+  Delete as DeleteIcon,
+  Edit as EditIcon,
+  Mic as MicIcon,
+  Send as SendIcon,
+  AddAPhoto as AddAPhotoIcon,
+} from "@mui/icons-material";
+import { useAuth } from "../UserAuthContext/AuthContext";
+import { uploadFile } from "./firebaseStorage";
 
-const ChatWhatsApp = () => {
-  
-  const messagesEndRef = useRef(null);
+const ChatWhatsApp = ({ selectedClientId }) => {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState([
-    { type: "incoming", text: "Olá, como posso ajudá-lo hoje?" },
-  ]);
-  const [isMicActive, setIsMicActive] = useState(false);
-  const [recorder, setRecorder] = useState(null);
-  const [audioBlob, setAudioBlob] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [editMessageIndex, setEditMessageIndex] = useState(null);
   const [mediaFile, setMediaFile] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isTyping, setIsTyping] = useState(false);
-  const [editMessageIndex, setEditMessageIndex] = useState(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const [audioBlob, setAudioBlob] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [selectedMessageIndex, setSelectedMessageIndex] = useState(null);
+  const [actionModalOpen, setActionModalOpen] = useState(false);
 
+  const handleOpenActionModal = (index) => {
+    setSelectedMessageIndex(index);
+    setActionModalOpen(true);
+  };
+
+  const handleCloseActionModal = () => {
+    setSelectedMessageIndex(null);
+    setActionModalOpen(false);
+  };
+  const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
+
+  const messagesEndRef = useRef(null);
+
+  const { user, isAdmin } = useAuth();
+
+  const conversationId = isAdmin ? selectedClientId : user?.id;
+
+  const toggleChat = () => setIsChatOpen(!isChatOpen);
+
+  // 🔥 Scroll automático
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  // 🔥 Escutar mensagens
+  useEffect(() => {
+    if (!conversationId) return;
+
+    const q = query(
+      collection(db, "conversations", conversationId, "messages"),
+      orderBy("createdAt", "asc")
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const msgs = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setMessages(msgs);
+    });
+
+    return () => unsubscribe();
+  }, [conversationId]);
+
+  /// 🟢 Mensagem automática — aparece apenas uma vez no início da conversa
+  useEffect(() => {
+    if (!conversationId) return;
+
+    const hasWelcomeMessage = messages.some((msg) => msg.userId === "bot");
+
+    if (!hasWelcomeMessage && messages.length === 0) {
+      const sendWelcome = async () => {
+        await addDoc(
+          collection(db, "conversations", conversationId, "messages"),
+          {
+            text: mensagensAutomaticas[0],
+            createdAt: serverTimestamp(),
+            userId: "bot",
+            userName: "Cristiano Bot",
+            type: "incoming",
+          }
+        );
+      };
+      sendWelcome();
+    }
+  }, [messages, conversationId]);
+
+
+
+  // 🕐 Função para gerar saudação conforme o horário
+const getGreeting = () => {
+  const hour = new Date().getHours();
+  if (hour >= 5 && hour < 12) return "Bom dia";
+  if (hour >= 12 && hour < 18) return "Boa tarde";
+  return "Boa noite";
+};
+
+// 🟢 Mensagem automática com saudação dinâmica
+const mensagensAutomaticas = [
+  `${getGreeting()}! 😊 Seja bem-vindo à WhiwaSana. Me chamo Cristiano, seu assistente virtual. Como posso te ajudar hoje?`,
+];
+
+  //🔥 1. Verificar se é texto e se está dentro dos 10 minutos:
+
+  const canEditMessage = (msg) => {
+    if (msg.mediaType) return false; // Se for mídia, não pode editar
+    if (msg.userId !== user?.id && !isAdmin) return false; // Só o dono ou admin
+
+    const createdAt = msg.createdAt?.toDate?.();
+    if (!createdAt) return false;
+
+    const now = new Date();
+    const diffMinutes = (now - createdAt) / (1000 * 60);
+    return diffMinutes <= 10;
+  };
+
+  // ✅ Enviar mensagem
+  const handleSendMessage = async () => {
+    if (!message.trim()) return;
+
+    if (!user || !user.id) {
+      console.error("Usuário não autenticado.");
+      return;
+    }
+
+    await addDoc(collection(db, "conversations", conversationId, "messages"), {
+      text: message,
+      createdAt: serverTimestamp(),
+      userId: user.id,
+      userName: user.name,
+      type: isAdmin ? "incoming" : "outgoing",
+    });
+
+    setMessage("");
+    setEditMessageIndex(null);
+  };
+
+  const handleUpdateMessage = async () => {
+    const msg = messages[editMessageIndex];
+    if (!msg?.id) return;
+
+    await updateDoc(
+      doc(db, "conversations", conversationId, "messages", msg.id),
+      { text: message }
+    );
+
+    setMessage("");
+    setEditMessageIndex(null);
+  };
+
+  // ✅ Editar mensagem
   const handleEditMessage = (index) => {
-    const selectedMsg = messages[index];
-    if (selectedMsg.text) {
-      setMessage(selectedMsg.text);
+    const msg = messages[index];
+    const isOwnMessage = msg.userId === user?.id || isAdmin;
+
+    if (!isOwnMessage) {
+      alert("Você não pode editar esta mensagem.");
+      return;
+    }
+
+    if (msg?.text) {
+      setMessage(msg.text);
       setEditMessageIndex(index);
     }
   };
 
-  const handleUpdateMessage = () => {
-    if (editMessageIndex !== null) {
-      const updatedMessages = [...messages];
-      updatedMessages[editMessageIndex].text = message;
+  // ✅ Deletar mensagem
+  const handleDeleteMessage = async (index) => {
+    const msg = messages[index];
+    const isOwnMessage = msg.userId === user?.id || isAdmin;
 
-      setMessages(updatedMessages);
-      saveMessagesToLocalStorage(updatedMessages);
-
-      setMessage("");
-      setEditMessageIndex(null);
+    if (!isOwnMessage) {
+      alert("Você não pode deletar esta mensagem.");
+      return;
     }
+
+    if (!msg?.id) return;
+
+    await deleteDoc(
+      doc(db, "conversations", conversationId, "messages", msg.id)
+    );
   };
 
-  const handleDeleteMessage = (index) => {
-    const updatedMessages = messages.filter((_, i) => i !== index);
+  const handleStartRecording = async () => {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRecorderRef.current = new MediaRecorder(stream);
+    audioChunksRef.current = [];
 
-    setMessages(updatedMessages);
-    saveMessagesToLocalStorage(updatedMessages);
+    mediaRecorderRef.current.ondataavailable = (e) => {
+      audioChunksRef.current.push(e.data);
+    };
+
+    mediaRecorderRef.current.onstop = () => {
+      const audioBlob = new Blob(audioChunksRef.current, {
+        type: "audio/webm",
+      });
+      setAudioBlob(audioBlob);
+      setIsModalOpen(true); // Abre o modal para confirmar envio
+    };
+
+    mediaRecorderRef.current.start();
+    setIsRecording(true);
   };
 
-  const [selectedMessageIndex, setSelectedMessageIndex] = useState(null);
-
-  // Funções chamadas ao clicar no modal
-  const onEdit = () => {
-    handleEditMessage(selectedMessageIndex);
-    handleCloseModal();
+  const handleStopRecording = () => {
+    mediaRecorderRef.current.stop();
+    setIsRecording(false);
   };
 
-  const onDelete = () => {
-    handleDeleteMessage(selectedMessageIndex);
-    handleCloseModal();
-  };
-
-  // Adicione um novo estado para controlar o índice da mensagem automática
-  const [automaticMessageIndex, setAutomaticMessageIndex] = useState(0);
-
-  useEffect(() => {
-    // Faz o scroll automático para a última mensagem sempre que messages for atualizado
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
-
-  // Enviar mensagem de texto
-  const handleSendMessage = () => {
-    if (!message.trim()) return;
-
-    const newMessage = { type: "outgoing", text: message };
-    const updatedMessages = [...messages, newMessage];
-
-    setMessages(updatedMessages);
-
-    saveMessagesToLocalStorage(updatedMessages);
-
-    setMessage("");
-
-    setIsTyping(true);
-
-    // Aguarda um pequeno tempo antes de enviar a resposta automática
-    setTimeout(() => {
-      responderMensagem();
-    }, 3000); // Ajuste o tempo conforme necessário
-  };
-
-  // Função para responder na sequência correta
-  const responderMensagem = () => {
-    setIsTyping(false); // Remove "digitando..." antes de responder
-
-    if (automaticMessageIndex < mensagensAutomaticas.length) {
-      const newMessage = {
-        type: "incoming",
-        text: mensagensAutomaticas[automaticMessageIndex],
-      };
-      const updatedMessages = [...messages, newMessage];
-
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
-      saveMessagesToLocalStorage(updatedMessages);
-      setAutomaticMessageIndex(automaticMessageIndex + 1);
-    } else {
-      const newMessage = {
-        type: "incoming",
-        text: "Se precisar de mais alguma coisa, estou por aqui! 😊",
-      };
-      const updatedMessages = [...messages, newMessage];
-
-      // Atualiza o estado das mensagens com a nova mensagem padrão
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
-      saveMessagesToLocalStorage(updatedMessages); // Salvar no localStorage
-    }
-  };
-
-  // Função para carregar mensagens do localStorage ao iniciar
-  useEffect(() => {
-    const savedMessages =
-      JSON.parse(localStorage.getItem("chatMessages")) || [];
-    setMessages(savedMessages);
-  }, []);
-
-  // Função para salvar mensagens no localStorage
-  const saveMessagesToLocalStorage = (messages) => {
-    localStorage.setItem("chatMessages", JSON.stringify(messages));
-  };
-
-  // Função para alternar o chat
-  const toggleChat = () => setIsChatOpen((prev) => !prev);
-
-  // Enviar mensagem de áudio
-  const handleMicPress = async () => {
-    setIsMicActive(true);
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const newRecorder = new MediaRecorder(stream);
-      newRecorder.ondataavailable = (event) => setAudioBlob(event.data);
-      newRecorder.start();
-      setRecorder(newRecorder);
-    } catch (error) {
-      console.error("Erro ao acessar o microfone:", error);
-      setIsMicActive(false);
-    }
-  };
-
-  const handleMicRelease = () => {
-    if (recorder) {
-      recorder.stop();
-      recorder.stream.getTracks().forEach((track) => track.stop());
-      setRecorder(null);
-      setIsMicActive(false);
-
-      if (audioBlob) {
-        const audioUrl = URL.createObjectURL(audioBlob);
-
-        const newMessage = {
-          type: "outgoing",
-          audio: audioUrl,
-        };
-
-        const updatedMessages = [...messages, newMessage];
-        setMessages(updatedMessages);
-        saveMessagesToLocalStorage(updatedMessages); // Salvar no localStorage
-      }
-    }
-  };
-
-  // Selecionar mídia
+  // ✅ Upload de mídia
   const handleMediaClick = () => {
     const fileInput = document.createElement("input");
     fileInput.type = "file";
@@ -194,72 +249,77 @@ const ChatWhatsApp = () => {
     fileInput.onchange = (e) => {
       if (e.target.files.length) {
         setMediaFile(e.target.files[0]);
-        setIsModalOpen(true); // Abre o modal ao selecionar o arquivo
+        setIsModalOpen(true);
       }
     };
     fileInput.click();
   };
 
-  // Cancelar envio de mídia
+  const handleConfirmSend = async () => {
+    if (!mediaFile) return;
+
+    setIsUploading(true); // 👉 Começa o loading
+
+    try {
+      const mediaUrl = await uploadFile(mediaFile, "chatMedia");
+
+      if (!mediaUrl) {
+        alert("Erro ao enviar o arquivo.");
+        return;
+      }
+
+      await addDoc(
+        collection(db, "conversations", conversationId, "messages"),
+        {
+          media: mediaUrl,
+          mediaType: mediaFile.type.startsWith("image/")
+            ? "image"
+            : mediaFile.type.startsWith("video/")
+            ? "video"
+            : "file",
+          createdAt: serverTimestamp(),
+          userId: user.id,
+          userName: user.name,
+          type: isAdmin ? "incoming" : "outgoing",
+        }
+      );
+
+      setMediaFile(null);
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Erro no upload:", error);
+      alert("Erro ao enviar arquivo.");
+    } finally {
+      setIsUploading(false); // 👉 Finaliza o loading
+    }
+  };
+
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setMediaFile(null);
-  };
-
-  // Confirmar envio de mídia
-  const handleConfirmSend = () => {
-    if (!mediaFile) return;
-
-    const mediaUrl = URL.createObjectURL(mediaFile);
-    const mediaType = mediaFile.type.startsWith("image/")
-      ? "image"
-      : mediaFile.type.startsWith("video/")
-      ? "video"
-      : "file";
-
-    const newMessage = {
-      type: "outgoing",
-      media: mediaUrl,
-      mediaType,
-    };
-
-    const updatedMessages = [...messages, newMessage];
-    setMessages(updatedMessages);
-    saveMessagesToLocalStorage(updatedMessages); // Salvar no localStorage
-
-    setMediaFile(null);
-    setIsModalOpen(false);
   };
 
   return (
     <Stack
       sx={{
         display: "flex",
-        marginTop: "5rem",
+        maxWidth: "1290px",
         marginLeft: "auto",
         marginRight: "auto",
-
+        position: "relative",
         alignItems: "center",
         justifyContent: "center",
-        // bgcolor: "#e3f2fd",
+        // bgcolor: '#e3f2fd',
         gap: "2rem",
-        // padding: "20px 20px",
-        position: "absolute",
-        height: "10vh",
-
-        zIndex: 9999,
+        padding: "20px 20px",
       }}
     >
       <Stack className="show-chatbot">
         <button className="chatbot-toggler" onClick={toggleChat}>
           {isChatOpen ? (
-            <CloseIcon
-              sx={{ fontSize: "30px", color: "#fff", cursor: "pointer" }}
-            />
+            <CloseIcon sx={{ fontSize: "30px", color: "#fff" }} />
           ) : (
-            <WhatsAppIcon
-              sx={{ fontSize: "30px", color: "#fff", cursor: "pointer" }}
-            />
+            <WhatsAppIcon sx={{ fontSize: "30px", color: "#fff" }} />
           )}
         </button>
 
@@ -274,27 +334,38 @@ const ChatWhatsApp = () => {
               }}
             >
               <h2 style={{ color: "#fff", fontSize: "1.4rem" }}>
-                Fale com agente
+                Fale com a gente
               </h2>
             </Box>
 
             <ul className="chatbox">
               {messages.map((msg, index) => (
                 <li
-                  key={index}
+                  key={msg.id || index}
                   className={`chat ${msg.type}`}
+                  onClick={() => handleOpenActionModal(index)}
                   style={{
+                    cursor: "pointer",
                     display: "flex",
                     width: "100%",
                     justifyContent:
                       msg.type === "incoming" ? "flex-start" : "flex-end",
+                    backgroundColor:
+                      msg.type === "outgoing" && msg.userId === user.id
+                        ? "#d4edda"
+                        : msg.type === "incoming"
+                        ? "#e9ecef"
+                        : "#fff",
+                    padding: "2px",
+                    borderRadius: "10px",
+                    marginBottom: "4px",
                   }}
                 >
-                  {msg.type === "incoming" && <WhatshotIcon />}
+                  {msg.type === "incoming" && (
+                    <WhatshotIcon sx={{ marginRight: 1 }} />
+                  )}
 
-                  {msg.audio ? (
-                    <audio controls src={msg.audio}></audio>
-                  ) : msg.mediaType === "image" ? (
+                  {msg.mediaType === "image" ? (
                     <img
                       src={msg.media}
                       alt="Arquivo enviado"
@@ -306,41 +377,17 @@ const ChatWhatsApp = () => {
                       src={msg.media}
                       style={{ maxWidth: "200px", margin: "5px" }}
                     />
+                  ) : msg.mediaType === "audio" ? (
+                    <audio
+                      controls
+                      src={msg.media}
+                      style={{ maxWidth: "200px", margin: "5px" }}
+                    />
                   ) : (
-                    <p>{msg.text}</p>
-                  )}
-
-                  {/* Ícones editar e deletar somente para mensagens do tipo 'outgoing' */}
-                  {msg.type === "outgoing" && (
-                    <Box
-                      sx={{
-                        display: "flex",
-                        gap: "0.5rem",
-                        alignItems: "center",
-                      }}
-                    >
-                      <EditIcon
-                        sx={{
-                          fontSize: "18px",
-                          cursor: "pointer",
-                          color: "#1976d2",
-                        }}
-                        onClick={() => handleEditMessage(index)}
-                      />
-                      <DeleteIcon
-                        sx={{
-                          fontSize: "18px",
-                          cursor: "pointer",
-                          color: "#d32f2f",
-                        }}
-                        onClick={() => handleDeleteMessage(index)}
-                      />
-                    </Box>
+                    <p style={{ margin: 0 }}>{msg.text}</p>
                   )}
                 </li>
               ))}
-
-              {/* Div invisível para rolagem automática */}
               <div ref={messagesEndRef} />
             </ul>
 
@@ -354,11 +401,8 @@ const ChatWhatsApp = () => {
                   padding: "4px",
                   borderRadius: "50%",
                   backgroundColor: "#fff",
-                
-                  boxShadow: '0 0 5px #3cb815',
-                  transition: 'box-shadow 0.3s ease',
-                  '&:hover': { boxShadow: '0 0 10px #3cb815' },
-                  '&:active': { boxShadow: '0 0 15px #3cb815' },
+                  boxShadow: "0 0 5px #3cb815",
+                  "&:hover": { boxShadow: "0 0 10px #3cb815" },
                 }}
               />
               <textarea
@@ -374,8 +418,8 @@ const ChatWhatsApp = () => {
                     ? handleUpdateMessage
                     : handleSendMessage
                 }
-                onMouseDown={handleMicPress}
-                onMouseUp={handleMicRelease}
+                onMouseDown={handleStartRecording}
+                onMouseUp={handleStopRecording}
               >
                 {message.trim() ? (
                   editMessageIndex !== null ? (
@@ -398,7 +442,7 @@ const ChatWhatsApp = () => {
                 ) : (
                   <MicIcon
                     sx={{
-                      color: isMicActive ? "#3cb815" : "#ccc",
+                      color: isRecording ? "#3cb815" : "#ccc",
                       fontSize: "1.4rem",
                       cursor: "pointer",
                     }}
@@ -408,104 +452,225 @@ const ChatWhatsApp = () => {
             </div>
           </Box>
         )}
-      </Stack>
 
-      {/* Modal para confirmar o envio da imagem ou vídeo */}
-
-      <Modal open={isModalOpen} onClose={handleCloseModal}>
-        <Box
-          sx={{
-            bgcolor: "background.paper",
-            borderRadius: "8px",
-            boxShadow: 24,
-            p: 4,
-            maxWidth: 450,
-            margin: "auto",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            position: "absolute", // Usar 'absolute' para centralizar o modal
-            top: "50%", // Posiciona o topo do modal no meio da tela
-            left: "50%", // Posiciona a esquerda do modal no meio da tela
-            transform: "translate(-50%, -50%)", // Move o modal para o centro
-            textAlign: "center",
-          }}
-        >
-          <img
-            src={mediaFile ? URL.createObjectURL(mediaFile) : ""}
-            alt="Preview"
-            style={{ maxWidth: "100%", margin: "10px 0" }}
-          />
-
-          <h5
-            style={{
-              fontWeight: 800,
-              fontSize: "18px",
-              marginBottom: "20px",
-              color: "rgb(51, 191, 48)",
-            }}
-          >
-            Confirmar envio de mídia
-          </h5>
+        {/* Modal de mídia */}
+        <Modal open={isModalOpen} onClose={handleCloseModal}>
           <Box
             sx={{
-              marginTop: "10px",
-              width: "100%",
+              bgcolor: "background.paper",
+              borderRadius: "8px",
+              boxShadow: 24,
+              p: 4,
+              maxWidth: 450,
+              margin: "auto",
               display: "flex",
-              justifyContent: "space-between",
+              flexDirection: "column",
               alignItems: "center",
+              justifyContent: "center",
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              textAlign: "center",
             }}
           >
-            <Button
-              onClick={handleCloseModal}
+            {mediaFile && (
+              <img
+                src={URL.createObjectURL(mediaFile)}
+                alt="Preview"
+                style={{ maxWidth: "100%", margin: "10px 0" }}
+              />
+            )}
+
+            <h5
+              style={{
+                fontWeight: 800,
+                fontSize: "18px",
+                marginBottom: "20px",
+                color: "rgb(51, 191, 48)",
+              }}
+            >
+              Confirmar envio de mídia
+            </h5>
+            <Box
               sx={{
-                height: "50px",
-                width: "40%",
-                borderRadius: "15px 0px 15px 0px",
-                bgcolor: "rgb(51, 191, 48)",
+                marginTop: "10px",
+                width: "100%",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Button
+                onClick={handleCloseModal}
+                sx={{
+                  height: "50px",
+                  width: "40%",
+                  borderRadius: "15px 0px 15px 0px",
+                  bgcolor: "rgb(51, 191, 48)",
+                  color: "#fff",
+                  "&:hover": {
+                    background: "#3cb815",
+                  },
+                }}
+              >
+                Cancelar
+              </Button>
+
+              <Button
+                onClick={handleConfirmSend}
+                sx={{
+                  height: "50px",
+                  width: "40%",
+                  borderRadius: "15px 0px 15px 0px",
+                  bgcolor: "rgb(51, 191, 48)",
+                  color: "#fff",
+                  "&:hover": {
+                    background: "#3cb815",
+                  },
+                }}
+              >
+                Enviar
+              </Button>
+            </Box>
+
+            {/* 🔥 Tela de carregando sobreposta */}
+            {isUploading && (
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "100%",
+                  bgcolor: "rgba(255, 255, 255, 0.8)",
+                  zIndex: 10,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: "8px",
+                }}
+              >
+                <img
+                  src="https://i.gifer.com/ZZ5H.gif"
+                  alt="Carregando"
+                  width="50"
+                />
+                <h4 style={{ color: "#33bf30", marginTop: "10px" }}>
+                  Enviando mídia...
+                </h4>
+              </Box>
+            )}
+          </Box>
+        </Modal>
+
+        <Modal open={actionModalOpen} onClose={handleCloseActionModal}>
+          <Box
+            sx={{
+              bgcolor: "background.paper",
+              borderRadius: "8px",
+              boxShadow: 24,
+              p: 4,
+              maxWidth: 400,
+              margin: "auto",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              textAlign: "center",
+            }}
+          >
+            <h4 style={{ color: "#33bf30" }}>Ações da Mensagem</h4>
+
+            <Stack direction="row" gap={2} sx={{ mt: 3 }}>
+              {selectedMessageIndex !== null &&
+                canEditMessage(messages[selectedMessageIndex]) && (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={<EditIcon />}
+                    sx={{
+                      padding: "10",
+                      color: "#fff",
+                      borderRadius: "8px",
+                      fontSize: "10px",
+                      gap: "0.20rem",
+                      backgroundColor: "#1a2428",
+                      boxShadow: "1px 5px 20px #3ca63a",
+                      "&:hover": {
+                        boxShadow: "1px 5px 20px #f75f1d",
+                        background: "#f75f1d",
+                        color: "red",
+                      },
+                    }}
+                    onClick={() => {
+                      handleEditMessage(selectedMessageIndex);
+                      handleCloseActionModal();
+                    }}
+                  >
+                    Editar
+                  </Button>
+                )}
+
+              {selectedMessageIndex !== null &&
+                (messages[selectedMessageIndex].userId === user?.id ||
+                  isAdmin) && (
+                  <Button
+                    variant="contained"
+                    color="error"
+                    sx={{
+                      padding: "10",
+                      color: "#fff",
+                      borderRadius: "8px",
+                      fontSize: "10px",
+                      gap: "0.20rem",
+                      backgroundColor: "#1a2428",
+                      boxShadow: "1px 5px 20px #3ca63a",
+                      "&:hover": {
+                        boxShadow: "1px 5px 20px #f75f1d",
+                        background: "#f75f1d",
+                        color: "red",
+                      },
+                    }}
+                    startIcon={<DeleteIcon />}
+                    onClick={() => {
+                      handleDeleteMessage(selectedMessageIndex);
+                      handleCloseActionModal();
+                    }}
+                  >
+                    Excluir
+                  </Button>
+                )}
+            </Stack>
+
+            <Button
+              onClick={handleCloseActionModal}
+              sx={{
+                padding: "10",
+                boxShadow: "1px 5px 20px #3ca63a",
+                backgroundColor: "#3ca63a",
                 color: "#fff",
-                boxShadow: "20px 20px 50px rgba(0, 0, 0, 0.4)",
-                cursor: "pointer",
-                fontSize: "15px",
-                fontWeight: "bold",
-                transition: "all 0.3s ease-in-out",
+                borderRadius: "8px",
+                fontSize: "14px",
+                mt: 3,
+                gap: "1rem",
                 "&:hover": {
-                  boxShadow: "0 0 15px 5px #3cb815",
-                  background: "#3cb815",
-                  transform: "scale(1.05)",
+                  boxShadow: "1px 5px 20px #3ca63a",
+                  color: "#000",
                 },
               }}
+              variant="outlined"
             >
               Cancelar
             </Button>
-
-            <Button
-              onClick={handleConfirmSend}
-              sx={{
-                height: "50px",
-                width: "40%",
-                fontSize: "15px",
-                fontWeight: "bold",
-                borderRadius: "15px 0px 15px 0px",
-                bgcolor: "rgb(51, 191, 48)",
-                color: "#fff",
-                boxShadow: "20px 20px 50px rgba(0, 0, 0, 0.4)",
-                cursor: "pointer",
-                transition: "all 0.3s ease-in-out",
-                "&:hover": {
-                  boxShadow: "0 0 15px 5px #f75f1d",
-                  background: "#3cb815",
-                  transform: "scale(1.05)",
-                  color: "#f75f1d",
-                },
-              }}
-            >
-              Enviar
-            </Button>
           </Box>
-        </Box>
-      </Modal>
+        </Modal>
+      </Stack>
     </Stack>
   );
 };

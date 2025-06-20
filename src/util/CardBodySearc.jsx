@@ -22,7 +22,8 @@ import { GlobalContext } from "../contexto_global/useContextGlobal";
 import { useAuth } from "../UserAuthContext/AuthContext";
 
 const FormularioEntrega = () => {
-  const { carinho } = useContext(GlobalContext); // pega o carrinho do contexto global
+  const { carinho, favoriteItem, limparCarrinho, limparFavorito } =
+    useContext(GlobalContext); // pega o carrinho do contexto global
   const { user } = useAuth(); // pega o usuário logado do contexto Auth
 
   const [formData, setFormData] = useState({
@@ -56,40 +57,36 @@ const FormularioEntrega = () => {
     handleChange("telefone", formatted);
   };
 
-  
-    const handleCheckPostalCode = async () => {
-      if (!formData.country) {
-        setFormErrors((prev) => ({
-          ...prev,
-          cep: "Selecione o país antes do CEP",
-        }));
-        return;
-      }
-  
-      try {
-        const data = await fetchAddressByPostalCode(
-          formData.cep,
-          formData.country
-        );
-        setFormData((prev) => ({
-          ...prev,
-          rua: data.rua,
-          bairro: data.bairro,
-          cidade: data.cidade,
-          estado: data.estado,
-          country: data.country,
-        }));
-        setFormErrors((prev) => ({ ...prev, cep: "" }));
-      } catch (error) {
-        setFormErrors((prev) => ({
-          ...prev,
-          cep: error.message,
-        }));
-      }
-    };
+  const handleCheckPostalCode = async () => {
+    if (!formData.country) {
+      setFormErrors((prev) => ({
+        ...prev,
+        cep: "Selecione o país antes do CEP",
+      }));
+      return;
+    }
 
-
-
+    try {
+      const data = await fetchAddressByPostalCode(
+        formData.cep,
+        formData.country
+      );
+      setFormData((prev) => ({
+        ...prev,
+        rua: data.rua,
+        bairro: data.bairro,
+        cidade: data.cidade,
+        estado: data.estado,
+        country: data.country,
+      }));
+      setFormErrors((prev) => ({ ...prev, cep: "" }));
+    } catch (error) {
+      setFormErrors((prev) => ({
+        ...prev,
+        cep: error.message,
+      }));
+    }
+  };
 
   // Validação simples (você pode usar sua função validateDeliveryData)
   const validate = () => {
@@ -127,10 +124,17 @@ const FormularioEntrega = () => {
       return;
     }
 
+    if (!favoriteItem || favoriteItem.length === 0) {
+      setSnackbarSeverity("error");
+      setSnackbarMsg("Seu carrinho está vazio.");
+      setOpenSnackbar(true);
+    }
+
     try {
       await addDoc(collection(db, "pedidos"), {
         dadosEntrega: formData,
         produtos: carinho,
+        itemFavorito: favoriteItem,
         usuario: {
           id: user.id || user.uid,
           nome: user.name || user.displayName || "",
@@ -160,6 +164,10 @@ const FormularioEntrega = () => {
         country: "",
       });
       // Também pode limpar o carrinho aqui se quiser, usando setCarinho([]) do contexto global
+
+
+      limparCarrinho();
+       limparFavorito();
     } catch (error) {
       console.error("Erro ao enviar pedido:", error);
       setSnackbarSeverity("error");
@@ -174,7 +182,7 @@ const FormularioEntrega = () => {
         sx={{
           width: "100%",
           minHeight: "100vh", // Permite crescer
-          marginTop: "10%",
+          marginTop: "20%",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
@@ -211,7 +219,21 @@ const FormularioEntrega = () => {
                 width: "100%",
               }}
             >
-              <h2>Confirmar dados da entrega</h2>
+              <Typography
+                variant="h2"
+                component="h2"
+                sx={(theme) => ({
+                  fontSize: "1.8rem",
+                  [theme.breakpoints.down(500)]: {
+                    fontSize: "1.2rem",
+                  },
+                  [theme.breakpoints.down(282)]: {
+                    fontSize: "1rem",
+                  },
+                })}
+              >
+                Confirmar dados da entrega
+              </Typography>
             </Stack>
 
             <CardStylSearche.containerBox>
@@ -318,7 +340,9 @@ const FormularioEntrega = () => {
                     formErrors.cnpj ||
                     "Digite seu CPF (11 dígitos) ou CNPJ (14 dígitos)"
                   }
-                  FormHelperTextProps={{ sx: { fontSize: "0.90rem" } }}
+                  FormHelperTextProps={{
+                    sx: { fontSize: "0.75rem", color: "#666" },
+                  }}
                 />
               </Box>
             </CardStylSearche.containerBox>

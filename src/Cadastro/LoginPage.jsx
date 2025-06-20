@@ -133,18 +133,30 @@ const SignIn = () => {
       }
     }
   };
+useEffect(() => {
+  const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      setIsLoggedIn(true);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setIsLoggedIn(true);
+      // Pega dados do usuário no Firestore
+      const userDocRef = doc(db, "users", user.uid);
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (userDocSnap.exists()) {
+        const userData = userDocSnap.data();
+        setIsAdmin(userData.isAdmin || false);
       } else {
-        setIsLoggedIn(false);
+        setIsAdmin(false);
       }
-    });
 
-    return () => unsubscribe();
-  }, []);
+    } else {
+      setIsLoggedIn(false);
+      setIsAdmin(false);
+    }
+  });
+
+  return () => unsubscribe();
+}, []);
 
   return (
     <>

@@ -11,7 +11,15 @@ const GlobalProvider = ({ children }) => {
   const [carinho, setCarinho] = useState([]);
 
   const [favoriteItem, setFavoriteItem] = useState([]);
+  // Função para limpar o carrinho
+  const limparCarrinho = () => {
+    setCarinho([]);
+  };
 
+  // Função para limpar os favoritos
+  const limparFavorito = () => {
+    setFavoriteItem([]);
+  };
   // Adiciona ou incrementa item no carrinho
   const adicionarNovoItem = (produto) => {
     if (!produto) return;
@@ -93,7 +101,6 @@ const GlobalProvider = ({ children }) => {
     setFavoriteItem(novaLista);
   };
 
-
   // FormularioEntrega
   return (
     <GlobalContext.Provider
@@ -117,6 +124,8 @@ const GlobalProvider = ({ children }) => {
         totalItensCarrinho,
         adicionarNovosItenfavoritos,
         removerFavorito,
+        limparCarrinho, // ✅ Adicionado
+        limparFavorito, // ✅ Adicionado
       }}
     >
       {children}

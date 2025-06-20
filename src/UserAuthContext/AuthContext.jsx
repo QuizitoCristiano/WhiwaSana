@@ -21,31 +21,50 @@ import { db, auth } from "../../firebaseconfig/firebaseconfig";
 
 export const AuthContext = createContext();
 
+
+
 export const AuthProvider = ({ children }) => {
   const firestore = getFirestore();
   const provider = new GoogleAuthProvider();
 
-  // Estados principais
+ // Estados principais
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     return localStorage.getItem("isLoggedIn") === "true";
   });
+
   const [user, setUser] = useState(() => {
     const storedUser = localStorage.getItem("newUser");
     return storedUser ? JSON.parse(storedUser) : null;
   });
+
+  // FALTA ISSO AQUI 👇
+  const [isAdmin, setIsAdmin] = useState(() => {
+    const storedUser = localStorage.getItem("newUser");
+    if (storedUser) {
+      const userData = JSON.parse(storedUser);
+      return userData.isAdmin === true;
+    }
+    return false;
+  });
+
+
   useEffect(() => {
     const fetchUserData = async (authUser) => {
       if (!authUser?.uid) return null;
 
       try {
-        const usersCollectionRef = collection(db, "users");
-        const q = query(usersCollectionRef, where("id", "==", authUser.uid));
-        const querySnapshot = await getDocs(q);
+        const userDocRef = doc(db, "users", authUser.uid);
+        const userSnapshot = await getDoc(userDocRef);
 
-        if (!querySnapshot.empty) {
+        if (userSnapshot.exists()) {
+          const userData = userSnapshot.data();
+
+          // 👇 Verifica se é admin
+          setIsAdmin(userData.isAdmin === true);
+
           return {
-            id: querySnapshot.docs[0].id,
-            ...querySnapshot.docs[0].data(),
+            id: userSnapshot.id,
+            ...userData,
           };
         }
       } catch (error) {
@@ -56,7 +75,6 @@ export const AuthProvider = ({ children }) => {
 
     const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
       if (authUser) {
-        console.log("Usuário autenticado:", authUser.uid);
         const userData = await fetchUserData(authUser);
         if (userData) {
           setUser(userData);
@@ -65,9 +83,9 @@ export const AuthProvider = ({ children }) => {
           setIsLoggedIn(true);
         }
       } else {
-        console.log("Nenhum usuário autenticado.");
         setUser(null);
         setIsLoggedIn(false);
+        setIsAdmin(false);
         localStorage.removeItem("newUser");
         localStorage.removeItem("isLoggedIn");
       }
@@ -81,7 +99,6 @@ export const AuthProvider = ({ children }) => {
   const logInWithEmailAndPassword = async (email, password) => {
     try {
       const auth = getAuth();
-
       const userCredential = await signInWithEmailAndPassword(
         auth,
         email,
@@ -94,9 +111,12 @@ export const AuthProvider = ({ children }) => {
 
       if (userSnapshot.exists()) {
         const userData = userSnapshot.data();
+
+        setIsAdmin(userData.isAdmin === true); // 👈 Aqui também
         localStorage.setItem("newUser", JSON.stringify(userData));
         localStorage.setItem("isLoggedIn", "true");
         setIsLoggedIn(true);
+
         return { success: true };
       } else {
         return {
@@ -114,6 +134,7 @@ export const AuthProvider = ({ children }) => {
     await auth.signOut();
     setIsLoggedIn(false);
     setUser(null);
+    setIsAdmin(false); // 👈 zera admin no logout
     localStorage.removeItem("newUser");
     localStorage.removeItem("isLoggedIn");
   };
@@ -182,6 +203,7 @@ export const AuthProvider = ({ children }) => {
         loading,
         enviarCodigoVerificacao,
         loginWithGoogle,
+        isAdmin, // 👈 adiciona aqui
       }}
     >
       {children}

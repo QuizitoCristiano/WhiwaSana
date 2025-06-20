@@ -1,35 +1,31 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 
 import { MyHome } from "../pages/home";
 import { MainLayout } from "../layouts/mylayouts";
-import { MyFooter } from "../footer/footerBx";
-import ContactForm from "../contact/ContactForm";
 import AlmadaWhiwaSana from "../companyStory/CompanyHistory";
 import PromocoesPage from "../Promocoes/PromocoesPage";
 import Signup from "../Cadastro/SignUpPage";
 import AlterarSenha from "../Cadastro/UpdatePassword";
 import RecuperarSeanha from "../Cadastro/ForgotPasswordPage";
 import SignIn from "../Cadastro/LoginPage";
-import { AuthContext } from "../UserAuthContext/AuthContext";
 import VerificarCodigo from "../Cadastro/VerifyCodePage";
 import FormularioEntrega from "../util/CardBodySearc";
 
-// 🔒 **Componente para rotas protegidas**
-const ProtectedRoute = ({ children }) => {
-  const { isLoggedIn } = useContext(AuthContext);
-  return isLoggedIn ? children : <Navigate to="/Login" />;
-};
+import AdminDashboard from "../admin/AdminDashboard";
+import AdminUsersManagement from "../admin/AdminUsersManagement";
 
-// 🌍 **Definição das rotas principais**
+
+import { useAuth } from "../UserAuthContext/AuthContext";
+import ProtectedRoute from "./ProtectedRoute";
+import AdminRoute from "../admin/AdminRoute";
 
 export const MainRoutes = () => {
-  const { isLoggedIn } = useContext(AuthContext);
+  const { isLoggedIn } = useAuth();
 
   return (
-    // Rotas
     <Routes>
-      {/* Rotas protegidas */}
+      {/* Rotas protegidas para usuários logados */}
       <Route
         element={
           <ProtectedRoute>
@@ -41,19 +37,26 @@ export const MainRoutes = () => {
         <Route path="/AlmadaWhiwaSana" element={<AlmadaWhiwaSana />} />
         <Route path="/PromocoesPage" element={<PromocoesPage />} />
         <Route path="/FormularioEntrega" element={<FormularioEntrega />} />
-         
       </Route>
 
-
+      {/* Rotas exclusivas para admins */}
+      <Route
+        element={
+          <AdminRoute>
+            <MainLayout />
+          </AdminRoute>
+        }
+      >
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/admin/users" element={<AdminUsersManagement />} />
+      </Route>
 
       {/* Rotas públicas */}
       <Route path="/Login" element={<SignIn />} />
       <Route path="/Signup" element={<Signup />} />
       <Route path="/AlterarSenha" element={<AlterarSenha />} />
       <Route path="/RecuperarSeanha" element={<RecuperarSeanha />} />
-        <Route path="/VerificarCodigo" element={<VerificarCodigo />} />
-
-      
+      <Route path="/VerificarCodigo" element={<VerificarCodigo />} />
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to={isLoggedIn ? "/" : "/Login"} />} />

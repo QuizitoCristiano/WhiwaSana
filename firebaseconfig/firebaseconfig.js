@@ -1,29 +1,27 @@
+// firebaseconfig.js
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
-import { getStorage } from "firebase/storage"; // ✅ Adicionado
+import { getStorage } from "firebase/storage";
+
+
+
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDR6pvj4ubW0Z743rCizkeEUhKKHue5n7w",
-  authDomain: "whiwasana.firebaseapp.com",
-  databaseURL: "https://whiwasana-default-rtdb.firebaseio.com",
-  projectId: "whiwasana",
-  storageBucket: "whiwasana.appspot.com", // ✅ Corrigido o domínio do bucket
-  storageBucket: "whiwasana.firebasestorage.app",
-  messagingSenderId: "946140755894",
-  appId: "1:946140755894:web:cafe5d1ac5ecbadcbef317",
-  measurementId: "G-8FN1JDJSF5",
+  apiKey: "AIzaSyAz3WhuZB22TPRjP5hUp2YonLPpS4oipzU",
+  authDomain: "pizzaria-7b611.firebaseapp.com",
+  databaseURL: "https://pizzaria-7b611-default-rtdb.firebaseio.com",
+  projectId: "pizzaria-7b611",
+  storageBucket: "pizzaria-7b611.appspot.com",
+  messagingSenderId: "691116080485",
+  appId: "1:691116080485:web:04986bfa28fde3cae7758c",
+  measurementId: "G-1GNS4QK9Y5"
 };
 
-// Inicializa o app
 const app = initializeApp(firebaseConfig);
 
-// Serviços do Firebase
 const db = getFirestore(app);
 const auth = getAuth(app);
-const analytics = getAnalytics(app);
-const storage = getStorage(app); // ✅ Inicializando o Storage
+const storage = getStorage(app);
 
-// Exportações
-export { db, auth, analytics, storage }; // ✅ Agora storage é exportado
+export { app, db, auth, storage };
