@@ -110,7 +110,7 @@ const SignIn = () => {
     );
 
     if (result.success) {
-      navigate("/");
+      navigate("/"); // ou para onde quiser
     } else {
       const error = result.error;
       if (error.message === "Usuário não encontrado no sistema.") {
@@ -133,30 +133,6 @@ const SignIn = () => {
       }
     }
   };
-useEffect(() => {
-  const unsubscribe = onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      setIsLoggedIn(true);
-
-      // Pega dados do usuário no Firestore
-      const userDocRef = doc(db, "users", user.uid);
-      const userDocSnap = await getDoc(userDocRef);
-
-      if (userDocSnap.exists()) {
-        const userData = userDocSnap.data();
-        setIsAdmin(userData.isAdmin || false);
-      } else {
-        setIsAdmin(false);
-      }
-
-    } else {
-      setIsLoggedIn(false);
-      setIsAdmin(false);
-    }
-  });
-
-  return () => unsubscribe();
-}, []);
 
   return (
     <>

@@ -46,7 +46,6 @@ const ChatWhatsApp = ({ selectedClientId }) => {
   const [mediaFile, setMediaFile] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
-  const [audioBlob, setAudioBlob] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const [selectedMessageIndex, setSelectedMessageIndex] = useState(null);
   const [actionModalOpen, setActionModalOpen] = useState(false);
@@ -60,8 +59,7 @@ const ChatWhatsApp = ({ selectedClientId }) => {
     setSelectedMessageIndex(null);
     setActionModalOpen(false);
   };
-  const mediaRecorderRef = useRef(null);
-  const audioChunksRef = useRef([]);
+
 
   const messagesEndRef = useRef(null);
 
@@ -215,31 +213,7 @@ const mensagensAutomaticas = [
     );
   };
 
-  const handleStartRecording = async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    mediaRecorderRef.current = new MediaRecorder(stream);
-    audioChunksRef.current = [];
-
-    mediaRecorderRef.current.ondataavailable = (e) => {
-      audioChunksRef.current.push(e.data);
-    };
-
-    mediaRecorderRef.current.onstop = () => {
-      const audioBlob = new Blob(audioChunksRef.current, {
-        type: "audio/webm",
-      });
-      setAudioBlob(audioBlob);
-      setIsModalOpen(true); // Abre o modal para confirmar envio
-    };
-
-    mediaRecorderRef.current.start();
-    setIsRecording(true);
-  };
-
-  const handleStopRecording = () => {
-    mediaRecorderRef.current.stop();
-    setIsRecording(false);
-  };
+ 
 
   // ✅ Upload de mídia
   const handleMediaClick = () => {
@@ -323,135 +297,109 @@ const mensagensAutomaticas = [
           )}
         </button>
 
-        {isChatOpen && (
-          <Box className="chatbot">
-            <Box
-              sx={{
-                background: "#33bf30",
-                padding: "16px 0",
-                textAlign: "center",
-                position: "relative",
-              }}
-            >
-              <h2 style={{ color: "#fff", fontSize: "1.4rem" }}>
-                Fale com a gente
-              </h2>
-            </Box>
+       {isChatOpen && (
+  <Box className="chatbot">
+    <Box
+      sx={{
+        background: "#33bf30",
+        padding: "16px 0",
+        textAlign: "center",
+        position: "relative",
+      }}
+    >
+      <h2 style={{ color: "#fff", fontSize: "1.4rem" }}>
+        Fale com a gente
+      </h2>
+    </Box>
 
-            <ul className="chatbox">
-              {messages.map((msg, index) => (
-                <li
-                  key={msg.id || index}
-                  className={`chat ${msg.type}`}
-                  onClick={() => handleOpenActionModal(index)}
-                  style={{
-                    cursor: "pointer",
-                    display: "flex",
-                    width: "100%",
-                    justifyContent:
-                      msg.type === "incoming" ? "flex-start" : "flex-end",
-                    backgroundColor:
-                      msg.type === "outgoing" && msg.userId === user.id
-                        ? "#d4edda"
-                        : msg.type === "incoming"
-                        ? "#e9ecef"
-                        : "#fff",
-                    padding: "2px",
-                    borderRadius: "10px",
-                    marginBottom: "4px",
-                  }}
-                >
-                  {msg.type === "incoming" && (
-                    <WhatshotIcon sx={{ marginRight: 1 }} />
-                  )}
+    <ul className="chatbox">
+      {messages.map((msg, index) => (
+        <li
+          key={msg.id || index}
+          className={`chat ${msg.type}`}
+          onClick={() => handleOpenActionModal(index)}
+          style={{
+            cursor: "pointer",
+            display: "flex",
+            width: "100%",
+            justifyContent:
+              msg.type === "incoming" ? "flex-start" : "flex-end",
+            backgroundColor:
+              msg.type === "outgoing" && msg.userId === user.id
+                ? "#d4edda"
+                : msg.type === "incoming"
+                ? "#e9ecef"
+                : "#fff",
+            padding: "2px",
+            borderRadius: "10px",
+            marginBottom: "4px",
+          }}
+        >
+          {msg.type === "incoming" && (
+            <WhatshotIcon sx={{ marginRight: 0 }} />
+          )}
 
-                  {msg.mediaType === "image" ? (
-                    <img
-                      src={msg.media}
-                      alt="Arquivo enviado"
-                      style={{ maxWidth: "200px", margin: "5px" }}
-                    />
-                  ) : msg.mediaType === "video" ? (
-                    <video
-                      controls
-                      src={msg.media}
-                      style={{ maxWidth: "200px", margin: "5px" }}
-                    />
-                  ) : msg.mediaType === "audio" ? (
-                    <audio
-                      controls
-                      src={msg.media}
-                      style={{ maxWidth: "200px", margin: "5px" }}
-                    />
-                  ) : (
-                    <p style={{ margin: 0 }}>{msg.text}</p>
-                  )}
-                </li>
-              ))}
-              <div ref={messagesEndRef} />
-            </ul>
+          {msg.mediaType === "image" ? (
+            <img
+              src={msg.media}
+              alt="Arquivo enviado"
+              style={{ maxWidth: "200px", margin: "5px" }}
+            />
+          ) : msg.mediaType === "video" ? (
+            <video
+              controls
+              src={msg.media}
+              style={{ maxWidth: "200px", margin: "5px" }}
+            />
+          ) : (
+            <p style={{ margin: 0 }}>{msg.text}</p>
+          )}
+        </li>
+      ))}
+      <div ref={messagesEndRef} />
+    </ul>
 
-            <div className="chat-input">
-              <AddAPhotoIcon
-                onClick={handleMediaClick}
-                sx={{
-                  color: "#3cb815",
-                  fontSize: "1.4rem",
-                  cursor: "pointer",
-                  padding: "4px",
-                  borderRadius: "50%",
-                  backgroundColor: "#fff",
-                  boxShadow: "0 0 5px #3cb815",
-                  "&:hover": { boxShadow: "0 0 10px #3cb815" },
-                }}
-              />
-              <textarea
-                className="TheNewtextarea"
-                placeholder="Enviar Mensagem..."
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                required
-              />
-              <Button
-                onClick={
-                  editMessageIndex !== null
-                    ? handleUpdateMessage
-                    : handleSendMessage
-                }
-                onMouseDown={handleStartRecording}
-                onMouseUp={handleStopRecording}
-              >
-                {message.trim() ? (
-                  editMessageIndex !== null ? (
-                    <EditIcon
-                      sx={{
-                        color: "#3cb815",
-                        fontSize: "1.4rem",
-                        cursor: "pointer",
-                      }}
-                    />
-                  ) : (
-                    <SendIcon
-                      sx={{
-                        color: "#3cb815",
-                        fontSize: "1.4rem",
-                        cursor: "pointer",
-                      }}
-                    />
-                  )
-                ) : (
-                  <MicIcon
-                    sx={{
-                      color: isRecording ? "#3cb815" : "#ccc",
-                      fontSize: "1.4rem",
-                      cursor: "pointer",
-                    }}
-                  />
-                )}
-              </Button>
-            </div>
-          </Box>
-        )}
+   <div className="chat-input">
+  <AddAPhotoIcon
+    onClick={handleMediaClick}
+    sx={{
+      color: "#3cb815",
+      fontSize: "1.4rem",
+      cursor: "pointer",
+      padding: "4px",
+      borderRadius: "50%",
+      backgroundColor: "#fff",
+      boxShadow: "0 0 5px #3cb815",
+      "&:hover": { boxShadow: "0 0 10px #3cb815" },
+    }}
+  />
+  <textarea
+    className="TheNewtextarea"
+    placeholder="Enviar Mensagem..."
+    value={message}
+    onChange={(e) => setMessage(e.target.value)}
+    required
+  />
+  <Button
+    onClick={editMessageIndex !== null ? handleUpdateMessage : handleSendMessage}
+    disabled={message.trim() === ""}
+    sx={{
+      color: message.trim() === "" ? "#ccc" : "#3cb815",
+      cursor: message.trim() === "" ? "not-allowed" : "pointer",
+      minWidth: '40px',  // opcional, para tamanho fixo
+    }}
+  >
+    {editMessageIndex !== null ? (
+      <EditIcon sx={{ fontSize: "1.4rem" }} />
+    ) : (
+      <SendIcon sx={{ fontSize: "1.4rem" }} />
+    )}
+  </Button>
+</div>
+
+  </Box>
+)}
+
 
         {/* Modal de mídia */}
         <Modal open={isModalOpen} onClose={handleCloseModal}>

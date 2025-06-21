@@ -112,7 +112,7 @@ const Signup = () => {
   const [showConfirm, setShowConfirm] = useState(false);
 
   const [formData, setFormData] = useState({
-    fullName: "",
+    name: "",
     password: "",
     confirmPassword: "",
     email: "",
@@ -120,7 +120,7 @@ const Signup = () => {
   });
 
   const [formErrors, setFormErrors] = useState({
-    fullName: "",
+    name: "",
     password: "",
     confirmPassword: "",
     email: "",
@@ -138,7 +138,7 @@ const Signup = () => {
 
   const clearErrors = () => {
     setFormErrors({
-      fullName: "",
+      name: "",
       password: "",
       confirmPassword: "",
       email: "",
@@ -177,10 +177,10 @@ const Signup = () => {
     let isValid = true;
 
     if (
-      formData.fullName.trim() === "" ||
-      formData.fullName.split(" ").length < 2
+      formData.name.trim() === "" ||
+      formData.name.split(" ").length < 2
     ) {
-      errors.fullName = "Por favor, digite seu nome completo.";
+      errors.name = "Por favor, digite seu nome completo.";
       isValid = false;
     }
 
@@ -262,7 +262,7 @@ const Signup = () => {
         const user = userCredential.user;
 
         // Atualizar o perfil com o nome completo
-        await updateProfile(user, { displayName: formData.fullName });
+        await updateProfile(user, { displayName: formData.name });
         try {
           if (!user || !user.uid) {
             throw new Error("Usuário não autenticado.");
@@ -272,7 +272,7 @@ const Signup = () => {
           await setDoc(userDocRef, {
             id: user.uid,
             email: formData.email,
-            fullName: formData.fullName,
+            name: formData.name,
             telefone: formData.telefone,
           });
 
@@ -282,11 +282,12 @@ const Signup = () => {
         }
 
         // Salvar dados no LocalStorage
-        localStorage.setItem("userData", JSON.stringify(formData));
+     
+
 
         alert("Usuário cadastrado com sucesso!");
         setFormData({
-          fullName: "",
+          name: "",
           password: "",
           confirmPassword: "",
           email: "",
@@ -615,11 +616,11 @@ const Signup = () => {
                 <input
                   type="text"
                   placeholder="Digite o seu nome..."
-                  name="fullName"
-                  value={formData.fullName}
+                  name="name"
+                  value={formData.name}
                   onChange={(e) => handleChange(e.target.name, e.target.value)}
                 />
-                {formErrors.fullName && (
+                {formErrors.name && (
                   <p
                     style={{
                       color: "red",
@@ -627,7 +628,7 @@ const Signup = () => {
                       marginBottom: "1rem",
                     }}
                   >
-                    {formErrors.fullName}
+                    {formErrors.name}
                   </p>
                 )}{" "}
                 {/* Exibir erro apenas se houver */}
