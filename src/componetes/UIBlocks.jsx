@@ -154,13 +154,8 @@ const PremiumiPhones = () => {
 
                     background:
                     "linear-gradient(135deg, rgba(138, 137, 137, 0.1), rgba(133, 128, 128, 0.43))",
-
                     backdropFilter: "blur(20px)",
                     WebkitBackdropFilter: "blur(20px)",
-
-
-
-
                     position: "relative",
                     display: "flex",
                     justifyContent: "center",

@@ -10,6 +10,8 @@ import {
   doc,
   updateDoc,
   deleteDoc,
+  getDoc,
+  setDoc,
   getFirestore,
   where, // 🔥 Importa aqui
 } from "firebase/firestore";
@@ -147,14 +149,39 @@ const mensagensAutomaticas = [
   };
 
   // ✅ Enviar mensagem
-  const handleSendMessage = async () => {
-    if (!message.trim()) return;
 
-    if (!user || !user.id) {
-      console.error("Usuário não autenticado.");
-      return;
+ 
+
+
+
+const handleSendMessage = async () => {
+  if (!message.trim()) return;
+
+  if (!user || !user.id) {
+    console.error("Usuário não autenticado.");
+    return;
+  }
+
+  try {
+      // Ref para o documento da conversa
+    const conversationRef = doc(db, "conversations", conversationId);
+
+     // Verifica se o documento existe
+    const conversationSnap = await getDoc(conversationRef);
+
+    if (!conversationSnap.exists()) {
+      await setDoc(conversationRef, {
+        // Cria o documento da conversa com info básica
+        createdAt: serverTimestamp(),
+        userId: user.id,
+        userName: user.name,
+      });
+
+        // Você pode adicionar outros dados que quiser aqui
     }
 
+
+     // Agora adiciona a mensagem normalmente
     await addDoc(collection(db, "conversations", conversationId, "messages"), {
       text: message,
       createdAt: serverTimestamp(),
@@ -165,7 +192,20 @@ const mensagensAutomaticas = [
 
     setMessage("");
     setEditMessageIndex(null);
-  };
+  } catch (error) {
+    console.error("Erro ao enviar mensagem:", error);
+  }
+};
+
+
+
+
+
+
+
+
+
+
 
   const handleUpdateMessage = async () => {
     const msg = messages[editMessageIndex];

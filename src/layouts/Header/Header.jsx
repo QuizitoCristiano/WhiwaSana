@@ -33,6 +33,8 @@ import BagMarket from "../../marketBag/marketbag";
 import { GlobalContext } from "../../contexto_global/useContextGlobal";
 import PoupNewItem from "../../componetes/bbitem/poupItem";
 import WishlistItem from "../../Wishlist/WishlistView";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import AgendamentoPage from "../../pages/AgendamentoPage";
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -69,17 +71,15 @@ const myLink = [
   { label: "Produtos", link: "/PromocoesPage" },
 ];
 
-
-
 export const MyHeader = () => {
-  const { favoriteItem, setFavoriteItem, carinho, setcarinho,  } = useContext(GlobalContext);
+  const { favoriteItem, setFavoriteItem, carinho, setcarinho } =
+    useContext(GlobalContext);
   const [listaFavoritos, setListaFavoritos] = useState(false);
   const navigate = useNavigate();
   const [abreMeno, setAbreMeno] = useState(false);
   const [scrolling, setScrolling] = useState(false); // Estado para detectar o scroll
 
   const [sacola, setSacola] = useState(false);
-
 
   const handleAdicionarFavorito = (produto) => {
     const itemExistente = favoriteItem.find(
@@ -110,7 +110,8 @@ export const MyHeader = () => {
   };
   const handleToggleSacala = () => setSacola(!sacola);
 
- 
+  const [openCalendar, setOpenCalendar] = useState(false);
+  const handleTroggleCalendar = () => setOpenCalendar(!openCalendar);
 
   const handleMenuClick = (link) => {
     setAbreMeno(false); // Fecha o menu
@@ -137,24 +138,23 @@ export const MyHeader = () => {
       }, 500); // Ajuste o tempo de atraso conforme necessário (500ms, por exemplo)
     }
   };
-useEffect(() => {
-  if (carinho.length > 0) {
-    const lastItem = carinho[carinho.length - 1];
-    setLastAddedItem(lastItem.nome);
+  useEffect(() => {
+    if (carinho.length > 0) {
+      const lastItem = carinho[carinho.length - 1];
+      setLastAddedItem(lastItem.nome);
 
-    setNotifications([lastItem]); // ✅ sobrescreve
+      setNotifications([lastItem]); // ✅ sobrescreve
 
-    setAnimationState({ isStopped: false, isPaused: false });
+      setAnimationState({ isStopped: false, isPaused: false });
 
-    const timer = setTimeout(() => {
-      setNotifications([]); // ✅ limpa tudo
-      setAnimationState({ isStopped: true, isPaused: false });
-    }, 2000);
+      const timer = setTimeout(() => {
+        setNotifications([]); // ✅ limpa tudo
+        setAnimationState({ isStopped: true, isPaused: false });
+      }, 2000);
 
-    return () => clearTimeout(timer);
-  }
-}, [carinho]);
-
+      return () => clearTimeout(timer);
+    }
+  }, [carinho]);
 
   const handleOpenAlert = () => {
     setOpenAlert(true);
@@ -282,16 +282,70 @@ useEffect(() => {
         <Box
           sx={{
             position: "relative",
-            color: "red",
+            color: "#fff",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
 
             // backgroundColor: "#d90429",
             cursor: "pointer",
-            gap: "1rem",
+            gap: "0.50rem",
           }}
         >
+          <Box sx={{ color: "#33bf30" }}>
+            <CalendarTodayIcon
+              onClick={handleTroggleCalendar}
+              style={{ cursor: "pointer" }}
+            />
+          </Box>
+
+          {openCalendar && (
+            <Stack
+              sx={{
+                position: "fixed",
+                height: "90vh",
+                width: "auto",
+               
+                zIndex: 1000,
+                top: "3.8rem",
+                right: 0,
+                
+                overflowY: "auto", // <-- isso ativa o scroll
+                scrollbarWidth: "thin", // opcional para scroll mais fino no Firefox
+                "&::-webkit-scrollbar": {
+                  width: "6px",
+                },
+                "&::-webkit-scrollbar-thumb": {
+                  backgroundColor: "#ccc",
+                  borderRadius: "4px",
+                },
+                "@media only screen and (max-width: 805px)": {
+                  width: "100%", // ocupa a tela toda no mobile
+                  height: "100vh", // ocupa toda altura da tela no mobile
+                },
+              }}
+            >
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: "10px",
+                  right: "5px",
+                  cursor: "pointer",
+                  color: "var(--light-orange-color)",
+                  fontSize: "30px",
+                }}
+              >
+                <CloseIcon
+                  sx={{ fontSize: "20px" }}
+                  onClick={() => setOpenCalendar(false)}
+                />
+              </Box>
+              <AgendamentoPage
+                handleListaFavoritos={() => setOpenCalendar(false)}
+              />
+            </Stack>
+          )}
+
           <Stack
             sx={{
               position: "absolute",

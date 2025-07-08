@@ -7,7 +7,7 @@ import {
   DialogContentText,
   DialogTitle,
   Box,
-} from '@mui/material'
+} from "@mui/material";
 import React, { useState, useContext } from "react";
 
 import { ControlledCarousel } from "./carousel/carousel";
@@ -26,32 +26,33 @@ import MapHome from "../Promocoes/PaginaPromocoes";
 import ChatWhatsApp from "../chatWats/zap";
 import { useAuth } from "../UserAuthContext/AuthContext";
 import { useNavigate } from "react-router-dom";
-import ArrowBackIcon from '@mui/icons-material/ArrowBack'
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import AdminChat from "../chatWats/AdminChat";
+import ChatAdminDashboard from "../chatWats/AdminChatDashboard";
+import AgendamentoPage from "./AgendamentoPage";
 // import ControlledCarousel from "./carousel/HeadphoneImageContainer ";
 
 export const MyHome = () => {
-const { user, logout } = useAuth();
+  const { user, logout } = useAuth();
 
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
-  
-const handleLogout = () => {
-  localStorage.removeItem("newUser");
-  localStorage.removeItem("isLogged");
-  logout(); // <-- dispara logout do contexto, se tiver
-  navigate("/"); // volta para login
-};
 
+  const handleLogout = () => {
+    localStorage.removeItem("newUser");
+    localStorage.removeItem("isLogged");
+    logout(); // <-- dispara logout do contexto, se tiver
+    navigate("/"); // volta para login
+  };
 
   const handleClickOpen = () => {
     setOpen(true);
   };
 
   const handleNavigateBack = () => {
-  navigate(-1);
-};
-
+    navigate(-1);
+  };
 
   const handleClose = (confirmLogout) => {
     setOpen(false);
@@ -226,10 +227,13 @@ const handleLogout = () => {
         <ProductDetails />
         <ContactForm />
 
+        <ChatAdminDashboard />
+
+        <AdminChat />
+        <ChatWhatsApp />
+
         
 
-
-        <ChatWhatsApp />
         {/* <ChatWhatsAppTxet/> */}
       </Stack>
     </>

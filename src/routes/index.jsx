@@ -15,10 +15,11 @@ import FormularioEntrega from "../util/CardBodySearc";
 import AdminDashboard from "../admin/AdminDashboard";
 import AdminUsersManagement from "../admin/AdminUsersManagement";
 
-
 import { useAuth } from "../UserAuthContext/AuthContext";
 import ProtectedRoute from "./ProtectedRoute";
 import AdminRoute from "../admin/AdminRoute";
+import ChatWhatsApp from "../chatWats/zap";
+import ChatAdminDashboard from "../chatWats/AdminChatDashboard";
 
 export const MainRoutes = () => {
   const { isLoggedIn } = useAuth();
@@ -49,6 +50,8 @@ export const MainRoutes = () => {
       >
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="/admin/users" element={<AdminUsersManagement />} />
+        <Route path="/admin/chat" element={<ChatAdminDashboard />} />
+        <Route path="/admin/chat/:clientId" element={<ChatWhatsApp />} />
       </Route>
 
       {/* Rotas públicas */}
