@@ -328,15 +328,15 @@ export const MyHeader = () => {
               <Box
                 sx={{
                   position: "absolute",
-                  top: "10px",
-                  right: "5px",
+                  top: "5px",
+                  right: "10px",
                   cursor: "pointer",
                   color: "var(--light-orange-color)",
                   fontSize: "30px",
                 }}
               >
                 <CloseIcon
-                  sx={{ fontSize: "20px" }}
+                  sx={{ fontSize: "30px" }}
                   onClick={() => setOpenCalendar(false)}
                 />
               </Box>
