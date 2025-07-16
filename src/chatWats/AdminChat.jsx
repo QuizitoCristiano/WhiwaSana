@@ -139,7 +139,9 @@ const AdminChat = ({ clientId, clientName }) => {
                 marginBottom: "4px",
               }}
             >
-              <p style={{ margin: 0 }}>{msg.text}</p>
+              <p style={{ margin: 0, fontWeight: "bold", color: "#000" }}>
+                [{msg.type}] {msg.userName}: {msg.text}
+              </p>
             </li>
           ))}
           <div ref={messagesEndRef} />

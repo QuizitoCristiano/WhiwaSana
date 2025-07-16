@@ -17,6 +17,10 @@ import "dayjs/locale/pt-br";
 import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import dayjs from "dayjs";
+import "dayjs/locale/pt-br";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+dayjs.extend(isSameOrBefore);
+
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 
 import {
@@ -36,33 +40,33 @@ import Quizito1 from "../imagens/quizito1.png";
 
 const profissionaisMock = [
   {
-    name: "Dr. Emily Johnson",
-    especialidade: "Pediatra",
-    avatar: "https://randomuser.me/api/portraits/women/44.jpg",
+    name: "Lucas Silva",
+    especialidade: "Consultor de Smartphones e Acessórios",
+    avatar: "https://randomuser.me/api/portraits/men/31.jpg",
     horarios: ["10:00 - 11:00", "14:00 - 15:00", "16:00 - 17:00"],
   },
   {
-    name: "Temótio",
-    especialidade: "Dermatologista",
-    avatar: "https://randomuser.me/api/portraits/men/45.jpg",
-    horarios: ["07:30 - 10:30", "16:00 - 16:00"],
+    name: "Mariana Costa",
+    especialidade: "Especialista em Televisores e Monitores",
+    avatar: "https://randomuser.me/api/portraits/women/32.jpg",
+    horarios: ["09:00 - 11:00", "13:00 - 14:00", "15:30 - 17:00"],
   },
   {
-    name: "Dr. Michael Lee",
-    especialidade: "Dermatologista",
-    avatar: "https://randomuser.me/api/portraits/men/45.jpg",
-    horarios: ["11:00 - 12:00", "15:00 - 16:00"],
+    name: "Carlos Henrique",
+    especialidade: "Atendente de Informática e Tablets",
+    avatar: "https://randomuser.me/api/portraits/men/36.jpg",
+    horarios: ["08:30 - 10:30", "11:00 - 12:00", "16:00 - 17:30"],
   },
   {
     name: "Quizito Cristiano",
-    especialidade: "Pediatra",
+    especialidade: "Gerente de Loja / Multissetor",
     avatar: Quizito1,
     horarios: ["08:30 - 09:30", "11:30 - 15:30", "16:00 - 18:20"],
   },
-   {
-    name: "Stheffany",
-    especialidade: "Pediatra",
-   avatar: "https://randomuser.me/api/portraits/women/44.jpg",
+  {
+    name: "Beatriz Almeida",
+    especialidade: "Consultora de Relógios Inteligentes",
+    avatar: "https://randomuser.me/api/portraits/women/44.jpg",
     horarios: ["08:30 - 09:30", "11:30 - 15:30", "16:00 - 18:20"],
   },
 ];
@@ -101,12 +105,27 @@ const AgendamentoPage = () => {
     );
 
     const snapshot = await getDocs(q);
-    const agendamentos = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
 
-    setMeusAgendamentos(agendamentos);
+    const now = dayjs(); // Current datetime
+
+    const validAgendamentos = [];
+
+    for (const docSnap of snapshot.docs) {
+      const data = docSnap.data();
+      const appointmentDateTime = dayjs(
+        `${data.date} ${data.time.split(" - ")[0]}`,
+        "YYYY-MM-DD HH:mm"
+      );
+
+      if (appointmentDateTime.isBefore(now)) {
+        // Delete expired appointment
+        await deleteDoc(doc(db, "appointments", docSnap.id));
+      } else {
+        validAgendamentos.push({ id: docSnap.id, ...data });
+      }
+    }
+
+    setMeusAgendamentos(validAgendamentos);
   };
 
   useEffect(() => {
@@ -153,89 +172,135 @@ const AgendamentoPage = () => {
     console.log("Agendamento permitido?", agendamentoPermitido);
   }, [agendamentoPermitido, date]);
 
-const handleAgendar = async () => {
-  const selectedDate = date.format("YYYY-MM-DD");
+  const filtrarHorariosPermitidos = (horarios) => {
+    const diaSemana = date.day(); //6 é sábado
 
-  if (!selectedHorario) {
-    setError("Você precisa selecionar um horário para agendar.");
-    return;
-  }
+    if (diaSemana !== 6) {
+      return horarios;
+    }
 
-  const diaSemana = date.day();
-  const horaAtual = dayjs().hour();
-  const minutoAtual = dayjs().minute();
-  const hoje = dayjs().format("YYYY-MM-DD");
-  const ehHoje = selectedDate === hoje;
+    // Se for sábado, só retorna horários que começam antes ou até 13h
 
-  if (diaSemana === 0) {
-    setError("Não é possível agendar aos domingos.");
-    return;
-  }
+    return horarios.filter((horario) => {
+      const [horaInicial] = horario.split(" - ");
+      const [h, m] = horaInicial.split(":").map(Number);
+      const horarioInicio = dayjs().hour(h).minute(m);
+      const limite = dayjs().hour(13).minute(0);
+      return horarioInicio.isSameOrBefore(limite);
+    });
+  };
 
-  if (diaSemana === 6 && ehHoje) {
-    if (horaAtual > 13 || (horaAtual === 13 && minutoAtual > 0)) {
-      setError("Agendamentos aos sábados só são permitidos até as 13h.");
+  const handleAgendar = async () => {
+    const selectedDate = date.format("YYYY-MM-DD");
+
+    if (!selectedHorario) {
+      setError("Você precisa selecionar um horário para agendar.");
       return;
     }
-  }
 
-  const agendamentoRef = collection(db, "appointments");
+    const agora = dayjs();
+    const [horaSelecionada] = selectedHorario.split(" - ");
+    const dataHoraSelecionada = dayjs(
+      `${selectedDate} ${horaSelecionada}`,
+      "YYYY-MM-DD HH:mm"
+    );
 
-  // Verifica se o horário já está ocupado pelo profissional
-  const q = query(
-    agendamentoRef,
-    where("date", "==", selectedDate),
-    where("time", "==", selectedHorario),
-    where("professional", "==", selectedProf.name)
-  );
+    if (dataHoraSelecionada.isBefore(agora)) {
+      setError(
+        "Não é possível agendar para horários ou datas que já passaram."
+      );
+      return;
+    }
 
-  const snapshot = await getDocs(q);
+    const diaSemana = date.day();
+    const horaAtual = dayjs().hour();
+    const minutoAtual = dayjs().minute();
+    const hoje = dayjs().format("YYYY-MM-DD");
+    const ehHoje = selectedDate === hoje;
 
-  if (!snapshot.empty) {
-    setError("Esse horário já está ocupado.");
-    return;
-  }
+    if (diaSemana === 0) {
+      setError("Não é possível agendar aos domingos.");
+      return;
+    }
 
-  // 🔐 Verifica se o usuário já tem agendamento no mesmo horário
-  const conflitoQuery = query(
-    agendamentoRef,
-    where("date", "==", selectedDate),
-    where("time", "==", selectedHorario),
-    where("userId", "==", user.id)
-  );
+    if (diaSemana === 6 && ehHoje) {
+      if (horaAtual > 13 || (horaAtual === 13 && minutoAtual > 0)) {
+        setError("Agendamentos aos sábados só são permitidos até as 13h.");
+        return;
+      }
+    }
 
-  const conflitoSnapshot = await getDocs(conflitoQuery);
+    const agendamentoRef = collection(db, "appointments");
 
-  if (!conflitoSnapshot.empty) {
-    setError("Você já possui um agendamento nesse horário com outro profissional.");
-    return;
-  }
+    // Verifica se o horário já está ocupado pelo profissional
+    const q = query(
+      agendamentoRef,
+      where("date", "==", selectedDate),
+      where("time", "==", selectedHorario),
+      where("professional", "==", selectedProf.name)
+    );
 
-  try {
-    await addDoc(agendamentoRef, {
-      userId: user.id,
-      userName: user.name,
-      professional: selectedProf.name,
-      service: selectedProf.especialidade,
-      date: selectedDate,
-      time: selectedHorario,
-      createdAt: serverTimestamp(),
-    });
+    const snapshot = await getDocs(q);
 
-    setSuccess("Agendamento realizado com sucesso!");
-    setError("");
+    if (!snapshot.empty) {
+      setError("Esse horário já está ocupado.");
+      return;
+    }
 
-    await fetchAgendamentos();
+    // 🔐 Verifica se o usuário já tem agendamento no mesmo horário
+    const conflitoQuery = query(
+      agendamentoRef,
+      where("date", "==", selectedDate),
+      where("time", "==", selectedHorario),
+      where("userId", "==", user.id)
+    );
 
-    setTimeout(() => {
-      setModalOpen(false);
-    }, 2000);
-  } catch (err) {
-    console.error("Erro ao agendar:", err);
-    setError("Erro ao salvar o agendamento.");
-  }
-};
+    const conflitoSnapshot = await getDocs(conflitoQuery);
 
+    if (!conflitoSnapshot.empty) {
+      setError(
+        "Você já possui um agendamento nesse horário com outro profissional."
+      );
+      return;
+    }
+
+    if (diaSemana === 6) {
+      const [horaInicialStr] = selectedHorario.split(" - "); // ex: "14:00"
+      const [hora, minuto] = horaInicialStr.split(":").map(Number);
+      const horarioSelecionado = dayjs().hour(hora).minute(minuto);
+
+      const limiteSabado = dayjs().hour(13).minute(0);
+
+      if (horarioSelecionado.isAfter(limiteSabado)) {
+        setError("Aos sábados, só é possível agendar até as 13h.");
+        return;
+      }
+    }
+
+    try {
+      await addDoc(agendamentoRef, {
+        userId: user.id,
+        userName: user.name,
+        professional: selectedProf.name,
+        service: selectedProf.especialidade,
+        date: selectedDate,
+        time: selectedHorario,
+        createdAt: serverTimestamp(),
+      });
+
+      setSuccess("Agendamento realizado com sucesso!");
+      setError("");
+
+      await fetchAgendamentos();
+
+      setTimeout(() => {
+        setModalOpen(false);
+      }, 2000);
+    } catch (err) {
+      console.error("Erro ao agendar:", err);
+      setError("Erro ao salvar o agendamento.");
+    }
+  };
 
   const handleCancelarAgendamento = async (id) => {
     const confirmar = window.confirm(
@@ -346,17 +411,6 @@ const handleAgendar = async () => {
                     {prof.especialidade}
                   </Typography>
                 </Box>
-                <Stack direction="row" spacing={1} alignItems="center">
-                  <AccessTimeIcon fontSize="small" color="action" />
-
-                  <Typography
-                    variant="body2"
-                    fontWeight="medium"
-                    color="textSecondary"
-                  >
-                    {prof.horarios.length}h disponíveis
-                  </Typography>
-                </Stack>
               </Stack>
             </CardContent>
           </Card>
@@ -388,18 +442,20 @@ const handleAgendar = async () => {
               <Typography fontWeight="bold" mb={1}>
                 Selecione o horário:
               </Typography>
-              {selectedProf?.horarios.map((horario, idx) => (
-                <Button
-                  key={idx}
-                  variant={
-                    selectedHorario === horario ? "contained" : "outlined"
-                  }
-                  onClick={() => setSelectedHorario(horario)}
-                  sx={{ mr: 1, mb: 1 }}
-                >
-                  {horario}
-                </Button>
-              ))}
+              {filtrarHorariosPermitidos(selectedProf?.horarios || []).map(
+                (horario, idx) => (
+                  <Button
+                    key={idx}
+                    variant={
+                      selectedHorario === horario ? "contained" : "outlined"
+                    }
+                    onClick={() => setSelectedHorario(horario)}
+                    sx={{ mr: 1, mb: 1 }}
+                  >
+                    {horario}
+                  </Button>
+                )
+              )}
             </Box>
 
             <Typography>
@@ -540,7 +596,11 @@ const handleAgendar = async () => {
         <DialogActions>
           <Button
             onClick={() => setModalVerAgendamentos(false)}
-            color="primary"
+            sx={{
+              padding: 1,
+              bgcolor: "#f75f1d",
+              color: "#fff",
+            }}
           >
             Fechar
           </Button>
