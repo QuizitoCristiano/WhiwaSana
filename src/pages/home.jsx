@@ -34,9 +34,9 @@ import AgendamentoPage from "./AgendamentoPage";
 // import ControlledCarousel from "./carousel/HeadphoneImageContainer ";
 
 export const MyHome = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, open, setOpen } = useAuth();
 
-  const [open, setOpen] = useState(false);
+
   const navigate = useNavigate();
 
   const handleLogout = () => {

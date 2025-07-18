@@ -96,6 +96,12 @@ const AdminChat = ({ clientId, clientName }) => {
     await deleteDoc(doc(db, "conversations", clientId, "messages", msg.id));
   };
 
+  useEffect(() => {
+    setMessage("");
+    setEditMessageIndex(null);
+  }, [clientId]);
+
+
   return (
     <Stack
       sx={{

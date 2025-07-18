@@ -126,44 +126,7 @@ const FeaturediPhone = () => {
             </Typography>
           </Stack>
 
-          <Stack
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              gap: "10px",
-            }}
-          >
-            <Button
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                background: "rgb(237, 237, 237)",
-                borderRadius: "50%",
-                height: "60px",
-                width: "50px",
-                boxShadow: "0 2px 15px rgba(15, 1, 1, 0.1)",
-                minWidth: "unset", // Garante que o botão não se expanda demais
-              }}
-            >
-              <ArrowBackIosNewIcon sx={{ color: "rgb(51, 191, 48)" }} />
-            </Button>
-            <Button
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                background: "rgb(237, 237, 237)",
-                borderRadius: "50%",
-                height: "60px",
-                width: "50px",
-                boxShadow: "0 2px 15px rgba(71, 71, 71, 0.1)",
-                minWidth: "unset",
-              }}
-            >
-              <ArrowForwardIosIcon sx={{ color: "rgb(51, 191, 48)" }} />
-            </Button>
-          </Stack>
+         
         </Stack>
 
         <Stack

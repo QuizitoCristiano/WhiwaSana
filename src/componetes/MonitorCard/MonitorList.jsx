@@ -92,7 +92,7 @@ const ProductDetails = () => {
             </Typography>
           </Stack>
 
-          <Stack
+          {/* <Stack
             sx={{
               display: "flex",
               flexDirection: "row",
@@ -129,7 +129,7 @@ const ProductDetails = () => {
             >
               <ArrowForwardIosIcon sx={{ color: "rgb(51, 191, 48)" }} />
             </Button>
-          </Stack>
+          </Stack> */}
         </Stack>
 
         <Stack

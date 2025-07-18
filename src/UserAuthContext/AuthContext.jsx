@@ -27,6 +27,9 @@ export const AuthProvider = ({ children }) => {
   const firestore = getFirestore();
   const provider = new GoogleAuthProvider();
 
+  const [open, setOpen] = useState(false);
+
+
  // Estados principais
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     return localStorage.getItem("isLoggedIn") === "true";
@@ -203,6 +206,8 @@ export const AuthProvider = ({ children }) => {
         loading,
         enviarCodigoVerificacao,
         loginWithGoogle,
+        open, 
+        setOpen,
         isAdmin, // 👈 adiciona aqui
       }}
     >

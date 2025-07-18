@@ -14,6 +14,8 @@ import {
   setDoc,
   getFirestore,
   where, // 🔥 Importa aqui
+  getDocs, // Adicionado para verificar mensagens existentes
+  runTransaction,
 } from "firebase/firestore";
 
 import {
@@ -100,24 +102,46 @@ const ChatWhatsApp = ({ selectedClientId }) => {
   useEffect(() => {
     if (!conversationId) return;
 
-    const hasWelcomeMessage = messages.some((msg) => msg.userId === "bot");
+    const sendWelcomeIfNeeded = async () => {
+      const conversationRef = doc(db, "conversations", conversationId);
 
-    if (!hasWelcomeMessage && messages.length === 0) {
-      const sendWelcome = async () => {
-        await addDoc(
-          collection(db, "conversations", conversationId, "messages"),
-          {
+      await runTransaction(db, async (transaction) => {
+        const convDoc = await transaction.get(conversationRef);
+
+        if (!convDoc.exists()) {
+          // Cria a conversa e envia a mensagem automática
+          transaction.set(conversationRef, {
+            createdAt: serverTimestamp(),
+            userId: user.id,
+            userName: user.name,
+            welcomeSent: true,
+          });
+          const messagesRef = collection(db, "conversations", conversationId, "messages");
+          transaction.set(doc(messagesRef), {
             text: mensagensAutomaticas[0],
             createdAt: serverTimestamp(),
             userId: "bot",
             userName: "Cristiano Bot",
             type: "incoming",
-          }
-        );
-      };
-      sendWelcome();
-    }
-  }, [messages, conversationId]);
+          });
+        } else if (!convDoc.data().welcomeSent) {
+          // Marca que já enviou a mensagem automática
+          transaction.update(conversationRef, { welcomeSent: true });
+          const messagesRef = collection(db, "conversations", conversationId, "messages");
+          transaction.set(doc(messagesRef), {
+            text: mensagensAutomaticas[0],
+            createdAt: serverTimestamp(),
+            userId: "bot",
+            userName: "Cristiano Bot",
+            type: "incoming",
+          });
+        }
+        // Se já existe e welcomeSent: true, não faz nada
+      });
+    };
+
+    sendWelcomeIfNeeded();
+  }, [conversationId]);
 
 
 

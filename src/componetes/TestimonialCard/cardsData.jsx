@@ -12,31 +12,30 @@ const GalleryItems = [
   {
     icons: [StarIcon, StarIcon, StarIcon, StarHalfIcon, StarOutlineIcon], // 5 estrelas cheias
     title: "Avaliação dos clientes",
-    textp: `Lorem ipsum dolor sit amet consectetur adipisicing elit.
-       Consectetur libero modi vel numquam error unde! Ullam, omnis facere?
+    textp: `Qualidade, bom preço e atendimento que faz a diferença. Na WhiwaSana,
+     o cliente vem primeiro!
       `,
   },
   {
     icons: [BatteryChargingFullIcon],
     title: "Baderia Incomparável",
-    textp: `Lorem ipsum dolor sit amet consectetur adipisicing elit.
-       Consectetur libero modi vel numquam error unde! Ullam, omnis facere?
+    textp: `Energia duradoura para te acompanhar o dia todo. Liberdade sem se 
+    preocupar com recargas!
       `,
   },
   {
     icons: [BluetoothAudioIcon],
     title: "Bluetooth",
-    textp: `Lorem ipsum dolor sit amet consectetur adipisicing elit.
-       Consectetur libero modi vel numquam error unde! Ullam, omnis facere?
+    textp: `Tecnologia sem fio que garante conexão rápida, estável e prática com seus dispositivos.
+     Liberdade para curtir sua música onde quiser.
       `,
   },
-  {
-    icons: [HeadsetMicIcon],
-    title: "Ouça som sem parar",
-    textp: `Lorem ipsum dolor sit amet consectetur adipisicing elit.
-       Consectetur libero modi vel numquam error unde! Ullam, omnis facere?
-      `,
-  },
+ {
+  icons: [HeadsetMicIcon],
+  title: "Ouça som sem parar",
+  textp: `Desfrute de áudio claro e potente o dia todo.
+     Conecte e curta sua playlist sem interrupções.`,
+}
 ];
 
 export const Testimonials = () => {
@@ -95,7 +94,7 @@ export const Testimonials = () => {
           gridTemplateColumns: "repeat(4, 1fr)", // 3 colunas padrão
           gap: "20px",
           width: "100%",
-          marginBottom: '1rem',
+          marginBottom: "1rem",
 
           maxWidth: "1500px", // Define um limite máximo
           [theme.breakpoints.down("md")]: {
@@ -151,7 +150,7 @@ export const Testimonials = () => {
                 sx={{
                   //   backgroundColor: "rgba(231, 238, 232, 0.2)",
                   display: "flex",
-                 
+
                   alignItems: "center",
                   padding: "10px",
                   width: "90%",
@@ -165,7 +164,6 @@ export const Testimonials = () => {
                       //   color: "#FFD700",
                       color: "#33BF30",
                       fontSize: "2rem",
-                     
 
                       [theme.breakpoints.down(700)]: {
                         fontSize: "1.3rem",
@@ -239,7 +237,6 @@ export const Testimonials = () => {
           }}
         />
       </Box>
-
     </Stack>
   );
 };
