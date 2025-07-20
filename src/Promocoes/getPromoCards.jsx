@@ -88,7 +88,7 @@ const GetItemPromoCards = () => {
                 },
               })}
             >
-              Explorar os mais vendidos
+              Explorar os mais vendidos 
             </Typography>
           </Stack>
 

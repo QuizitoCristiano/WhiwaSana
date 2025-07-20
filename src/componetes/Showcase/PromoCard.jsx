@@ -110,7 +110,7 @@ const PromoCard = () => {
               variant="h1"
               sx={(theme) => ({
                 color: "#33bf30",
-                fontSize: "2rem",
+                fontSize: "1.5rem",
                 fontWeight: "600",
                 lineHeight: "1.3",
                 textAlign: "left",
@@ -121,7 +121,7 @@ const PromoCard = () => {
                 },
               })}
             >
-              Explorar os mais vendidos
+             Seu dia mais prático começa aqui
             </Typography>
           </Stack>
 

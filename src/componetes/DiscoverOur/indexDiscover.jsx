@@ -53,7 +53,7 @@ const DiscoverOurHeadphones = ({ adicionarNovoItem }) => {
               },
             })}
           >
-            Explorar os mais vendidos
+            Sinta o som em outro nível
           </Typography>
         </Stack>
 {/* 

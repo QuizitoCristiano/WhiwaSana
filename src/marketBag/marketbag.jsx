@@ -24,6 +24,14 @@ const BagMarket = ({ setSacola }) => {
   const [modalMessage, setModalMessage] = useState(""); // Novo estado para armazenar a mensagem
   const [openConfirm, setOpenConfirm] = useState(false);
   const [itemToRemove, setItemToRemove] = useState(null);
+
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
+  };
+
   const navigate = useNavigate();
 
   const handleCancelRemove = () => {
@@ -52,11 +60,15 @@ const BagMarket = ({ setSacola }) => {
   // Função para tratar clique do botão "Finalizar Compra"
   const handleFinalizarCompra = () => {
     if (carinho.length === 0) {
-      setModalMessage("Primeiro deve Adicionar item no carrinho.");
+      setSnackbarMessage(
+        "Sua sacola está vazia. Adicione algum item para continuar."
+      );
+
+      setSnackbarOpen(true);
     } else {
       setModalMessage("Compra finalizada com sucesso!");
+      setIsWishlistModalOpen(true);
     }
-    setIsWishlistModalOpen(true);
   };
 
   const adicionarItem = (index) => {
@@ -366,11 +378,27 @@ const BagMarket = ({ setSacola }) => {
       </Stack>
 
       {/* Modal de confirmação */}
-      <Dialog open={isWishlistModalOpen} onClose={toggleWishlistModal}>
+      <Dialog
+        open={isWishlistModalOpen}
+        onClose={toggleWishlistModal}
+        sx={{
+          zIndex: 3300,
+          width: "100%",
+          height: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "transparent",
+          boxShadow: "none",
+          "@media (max-width: 600px)": {
+            margin: 0,
+            borderRadius: 0,
+          },
+        }}
+      >
         <DialogTitle sx={{ fontWeight: 700 }}>{modalMessage}</DialogTitle>
 
         <DialogActions sx={{ display: "flex", gap: "1rem", padding: "1rem" }}>
-          {/* Botão de Fechar */}
           <Button
             sx={{
               color: "white",
@@ -391,7 +419,6 @@ const BagMarket = ({ setSacola }) => {
             Voltar
           </Button>
 
-          {/* Botão para ir ao Formulário */}
           <Button
             sx={{
               color: "white",
@@ -439,14 +466,65 @@ const BagMarket = ({ setSacola }) => {
           Tem certeza que deseja remover este item do carrinho?
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCancelRemove} color="primary">
+          <Button
+            onClick={handleCancelRemove}
+            sx={{
+              background: "#33bf30",
+              border: "none",
+              outline: "none",
+              color: "#fff",
+              padding: "0.5rem 1rem",
+
+              transition: "transform 0.3s, background 0.3s",
+              "&:hover": {
+                background: "#33bf30",
+                transform: "scale(1.05)",
+              },
+              "@media (max-width: 900px)": {
+                width: "100%",
+              },
+            }}
+          >
             Cancelar
           </Button>
-          <Button onClick={handleConfirmRemove} color="error">
+          <Button
+            onClick={handleConfirmRemove}
+            sx={{
+              background: "#f75f1d",
+              border: "none",
+              outline: "none",
+              color: "red",
+              fontWeight: "700",
+              padding: "0.5rem 1rem",
+              transition: "transform 0.3s, background 0.3s",
+              "&:hover": {
+                background: "#e65100",
+                transform: "scale(1.05)",
+              },
+              "@media (max-width: 900px)": {
+                width: "100%",
+              },
+            }}
+          >
             Remover
           </Button>
         </DialogActions>
       </Dialog>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }} // pode ser qualquer valor, não vai importar aqui
+      >
+        <Alert
+          onClose={() => setSnackbarOpen(false)}
+          severity="warning"
+          sx={{ width: "100%", textAlign: "center" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </>
   );
 };

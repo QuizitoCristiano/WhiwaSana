@@ -9,6 +9,7 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import {
   formatTelefone,
   fetchAddressByPostalCode,
@@ -20,6 +21,7 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../../firebaseconfig/firebaseconfig";
 import { GlobalContext } from "../contexto_global/useContextGlobal";
 import { useAuth } from "../UserAuthContext/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const FormularioEntrega = () => {
   const { carinho, favoriteItem, limparCarrinho, limparFavorito } =
@@ -46,6 +48,7 @@ const FormularioEntrega = () => {
   const [snackbarMsg, setSnackbarMsg] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
+  const navigate = useNavigate();
   // Função para atualizar campos do formulário
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -165,9 +168,8 @@ const FormularioEntrega = () => {
       });
       // Também pode limpar o carrinho aqui se quiser, usando setCarinho([]) do contexto global
 
-
       limparCarrinho();
-       limparFavorito();
+      limparFavorito();
     } catch (error) {
       console.error("Erro ao enviar pedido:", error);
       setSnackbarSeverity("error");
@@ -560,31 +562,69 @@ const FormularioEntrega = () => {
               </Box>
             </CardStylSearche.containerBox>
 
-            <Box>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: "1rem",
+                flexWrap: "wrap",
+                marginTop: "2rem",
+              }}
+            >
               <Button
                 type="submit"
                 sx={{
                   background: "#33bf30",
-                  border: "none !important",
-                  outline: "none !important",
+                  border: "none",
+                  outline: "none",
                   color: "#fff",
                   padding: "1rem 2.4rem",
                   borderRadius: "10px",
                   fontSize: "16px",
                   fontWeight: "bold",
                   cursor: "pointer",
-                  marginTop: "2rem",
-                  minWidth: "450px",
+                  minWidth: "250px",
                   boxShadow: "0 2px 4px 0 rgba(0, 0, 0, 0.16)",
-                  transition: "all 0.3s",
-                  "&:hover": { background: "#3cb815" },
+                  transition: "transform 0.3s, background 0.3s",
+                  "&:hover": {
+                    background: "#3cb815",
+                    transform: "scale(1.05)",
+                  },
                   "&:disabled": { background: "#ccc" },
                   "@media (max-width: 900px)": {
-                    minWidth: "200px",
+                    width: "100%",
                   },
                 }}
               >
                 Enviar
+              </Button>
+
+              <Button
+                onClick={() => navigate("/BagMarket")}
+                sx={{
+                  background: "#f75f1d",
+                  border: "none",
+                  outline: "none",
+                  color: "#fff",
+                  padding: "1rem 2.4rem",
+                  borderRadius: "10px",
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                  minWidth: "250px",
+                  boxShadow: "0 2px 4px 0 rgba(0, 0, 0, 0.16)",
+                  transition: "transform 0.3s, background 0.3s",
+                  "&:hover": {
+                    background: "#e65100",
+                    transform: "scale(1.05)",
+                  },
+                  "@media (max-width: 900px)": {
+                    width: "100%",
+                  },
+                }}
+              >
+                Voltar
               </Button>
             </Box>
           </CardStylSearche.wrapperfort>

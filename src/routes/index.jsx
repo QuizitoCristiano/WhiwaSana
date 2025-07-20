@@ -20,6 +20,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import AdminRoute from "../admin/AdminRoute";
 import ChatWhatsApp from "../chatWats/zap";
 import ChatAdminDashboard from "../chatWats/AdminChatDashboard";
+import BagMarket from "../marketBag/marketbag";
 
 export const MainRoutes = () => {
   const { isLoggedIn } = useAuth();
@@ -38,6 +39,7 @@ export const MainRoutes = () => {
         <Route path="/AlmadaWhiwaSana" element={<AlmadaWhiwaSana />} />
         <Route path="/PromocoesPage" element={<PromocoesPage />} />
         <Route path="/FormularioEntrega" element={<FormularioEntrega />} />
+      
       </Route>
 
       {/* Rotas exclusivas para admins */}

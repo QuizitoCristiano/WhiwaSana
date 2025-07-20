@@ -77,7 +77,7 @@ const ProductDetails = () => {
               variant="h1"
               sx={(theme) => ({
                 color: "#33bf30",
-                fontSize: "2rem",
+                fontSize: "1.8rem",
                 fontWeight: "600",
                 lineHeight: "1.3",
                 textAlign: "left",
@@ -88,7 +88,7 @@ const ProductDetails = () => {
                 },
               })}
             >
-              Explorar os mais vendidos
+              Ofertas que você não pode perder
             </Typography>
           </Stack>
 

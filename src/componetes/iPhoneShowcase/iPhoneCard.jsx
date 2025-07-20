@@ -111,7 +111,7 @@ const FeaturediPhone = () => {
               variant="h1"
               sx={(theme) => ({
                 color: "#33bf30",
-                fontSize: "2rem",
+                fontSize: "1.8rem",
                 fontWeight: "600",
                 lineHeight: "1.3",
                 textAlign: "left",
@@ -122,7 +122,7 @@ const FeaturediPhone = () => {
               },
               })}
             >
-              Explorar os mais vendidos
+              Apple ou Samsung? A Escolha é Sua
             </Typography>
           </Stack>
 

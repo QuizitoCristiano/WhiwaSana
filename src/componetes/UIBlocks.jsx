@@ -109,7 +109,7 @@ const PremiumiPhones = () => {
               },
             })}
           >
-            Explorar os mais vendidos
+           Portabilidade com potência
           </Typography>
         </Stack>
 

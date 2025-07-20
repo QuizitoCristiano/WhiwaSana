@@ -122,12 +122,12 @@ const ElectronicsItemOne = () => {
               textAlign: "19px",
 
               [theme.breakpoints.down(800)]: {
-                fontSize: "2rem",
+                fontSize: "1.2rem",
                 fontWeight: "600",
               },
             })}
           >
-            Nova Coleção
+            Nova Coleção Premium
           </Typography>
         </Box>
 
@@ -141,12 +141,12 @@ const ElectronicsItemOne = () => {
             marginBottom: "2rem",
             "-webkit-font-smoothing": "antialiased",
             [theme.breakpoints.down(800)]: {
-              fontSize: "1.7rem",
+              fontSize: "1.4rem",
               fontWeight: "600",
             },
           })}
         >
-          Explore The World of Advanced Handwear
+          Elegância e Inteligência no Seu Pulso.
         </Typography>
 
         <Box>
@@ -161,9 +161,13 @@ const ElectronicsItemOne = () => {
               margin: "10px 0",
             }}
           >
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis
-            bibendum rhoncus ipsum pellentesque scelerisque. Donec eget purus
-            felis. Vestibulum
+          
+
+          Descubra um smartwatch que une estilo refinado, materiais premium e recursos
+           inteligentes. Controle seu dia com classe e tecnologia de última geração 
+           porque o verdadeiro luxo está nos detalhes.
+
+
           </Typography>
 
           <Button

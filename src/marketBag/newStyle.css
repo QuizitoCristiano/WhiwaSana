@@ -30,6 +30,214 @@
   display: flex;
   align-items: center;
   justify-content: center;
-
   border-radius: 0.9rem 0 0.5rem 0;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.buttonQuntidade:hover {
+  background: var(--orange-color);
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(60, 184, 21, 0.3);
+}
+
+/* Estilos para o carrinho vazio */
+.empty-cart {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  text-align: center;
+  color: #666;
+}
+
+.empty-cart-icon {
+  font-size: 4rem;
+  color: var(--green-color);
+  margin-bottom: 1rem;
+  opacity: 0.7;
+}
+
+.empty-cart-text {
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.empty-cart-subtext {
+  font-size: 0.9rem;
+  color: #999;
+}
+
+/* Animações */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Estilos para cards de produtos */
+.cart-item-card {
+  animation: fadeInUp 0.5s ease-out;
+  transition: all 0.3s ease;
+}
+
+.cart-item-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Estilos para botões */
+.modern-button {
+  background: linear-gradient(135deg, var(--green-color), #2a8f12);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(60, 184, 21, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.modern-button:hover {
+  background: linear-gradient(135deg, var(--orange-color), #e67300);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 126, 0, 0.4);
+}
+
+.modern-button:active {
+  transform: translateY(0);
+}
+
+/* Estilos para o total */
+.total-container {
+  background: linear-gradient(135deg, rgba(60, 184, 21, 0.1), rgba(255, 126, 0, 0.1));
+  border-radius: 15px;
+  padding: 15px 20px;
+  border: 2px solid rgba(60, 184, 21, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.total-text {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--green-color);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos para ícones */
+.delete-icon {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.delete-icon:hover {
+  color: #d32f2f !important;
+  transform: scale(1.2);
+  animation: pulse 0.6s ease-in-out;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .modern-button {
+    padding: 10px 20px;
+    font-size: 0.8rem;
+  }
+  
+  .total-text {
+    font-size: 1rem;
+  }
+  
+  .empty-cart-icon {
+    font-size: 3rem;
+  }
+  
+  .empty-cart-text {
+    font-size: 1rem;
+  }
+}
+
+/* Scrollbar personalizada */
+.cart-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.cart-scroll::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.cart-scroll::-webkit-scrollbar-thumb {
+  background: var(--green-color);
+  border-radius: 10px;
+}
+
+.cart-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--orange-color);
+}
+
+/* Loading animation */
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Badge de quantidade */
+.quantity-badge {
+  background: var(--orange-color);
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: bold;
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  animation: fadeInUp 0.3s ease-out;
 }
