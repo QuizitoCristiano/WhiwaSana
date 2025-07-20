@@ -45,7 +45,7 @@ import natal3 from "./promoImages/tv-home-alp.png";
 import surpresa1 from "./promoImages/maeprom1.png";
 import surpresa2 from "./promoImages/madarDay.png";
 import surpresa3 from "./promoImages/iphoneMae.png";
-// import surpresa4 from "./promoImages/meaeProm.png";
+import surpresa4 from "./promoImages/meaeProm.png";
 // import surpresa4 from "./imagensNamorados/galaxnamorado.png";
 
 
