@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useContext } from "react";
+import React, { useState, useEffect, useRef, useContext, use } from "react";
 
 import {
   onSnapshot,
@@ -41,9 +41,11 @@ import {
 } from "@mui/icons-material";
 import { useAuth } from "../UserAuthContext/AuthContext";
 import { uploadFile } from "./firebaseStorage";
+import { getStorage, ref, deleteObject } from "firebase/storage";
+
+const storage = getStorage();
 
 const ChatWhatsApp = ({ selectedClientId }) => {
-  const [isChatOpen, setIsChatOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [editMessageIndex, setEditMessageIndex] = useState(null);
@@ -54,6 +56,40 @@ const ChatWhatsApp = ({ selectedClientId }) => {
   const [selectedMessageIndex, setSelectedMessageIndex] = useState(null);
   const [actionModalOpen, setActionModalOpen] = useState(false);
 
+
+  // Crie um estado para contar novas mensagens não lidas
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMsg, setToastMsg] = useState("");
+
+
+ useEffect(() => {
+  if (!isChatOpen && messages.length > 0) {
+    // Só conta se a última mensagem não for do próprio usuário
+    const lastMsg = messages[messages.length - 1];
+    if (lastMsg.userId !== user?.id) {
+      setUnreadCount(prev => prev + 1);
+
+    }
+  }
+ }, [messages]);
+
+ useEffect(() => {
+  if (isChatOpen) setUnreadCount(0);
+ }, [isChatOpen])
+
+ useEffect(() => {
+     if (!isChatOpen && messages.length > 0) {
+       const lastMsg = messages[messages.length - 1];
+       if (lastMsg.userId !== user?.id) {
+         setToastMsg(lastMsg.text || "Nova mensagem recebida!");
+         setShowToast(true);
+       }
+     }
+   }, [messages]);
+
+
   const handleOpenActionModal = (index) => {
     setSelectedMessageIndex(index);
     setActionModalOpen(true);
@@ -63,7 +99,6 @@ const ChatWhatsApp = ({ selectedClientId }) => {
     setSelectedMessageIndex(null);
     setActionModalOpen(false);
   };
-
 
   const messagesEndRef = useRef(null);
 
@@ -116,7 +151,12 @@ const ChatWhatsApp = ({ selectedClientId }) => {
             userName: user.name,
             welcomeSent: true,
           });
-          const messagesRef = collection(db, "conversations", conversationId, "messages");
+          const messagesRef = collection(
+            db,
+            "conversations",
+            conversationId,
+            "messages"
+          );
           transaction.set(doc(messagesRef), {
             text: mensagensAutomaticas[0],
             createdAt: serverTimestamp(),
@@ -127,7 +167,12 @@ const ChatWhatsApp = ({ selectedClientId }) => {
         } else if (!convDoc.data().welcomeSent) {
           // Marca que já enviou a mensagem automática
           transaction.update(conversationRef, { welcomeSent: true });
-          const messagesRef = collection(db, "conversations", conversationId, "messages");
+          const messagesRef = collection(
+            db,
+            "conversations",
+            conversationId,
+            "messages"
+          );
           transaction.set(doc(messagesRef), {
             text: mensagensAutomaticas[0],
             createdAt: serverTimestamp(),
@@ -143,20 +188,18 @@ const ChatWhatsApp = ({ selectedClientId }) => {
     sendWelcomeIfNeeded();
   }, [conversationId]);
 
-
-
   // 🕐 Função para gerar saudação conforme o horário
-const getGreeting = () => {
-  const hour = new Date().getHours();
-  if (hour >= 5 && hour < 12) return "Bom dia";
-  if (hour >= 12 && hour < 18) return "Boa tarde";
-  return "Boa noite";
-};
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 12) return "Bom dia";
+    if (hour >= 12 && hour < 18) return "Boa tarde";
+    return "Boa noite";
+  };
 
-// 🟢 Mensagem automática com saudação dinâmica
-const mensagensAutomaticas = [
-  `${getGreeting()}! 😊 Seja bem-vindo à WhiwaSana. Me chamo Cristiano, seu assistente virtual. Como posso te ajudar hoje?`,
-];
+  // 🟢 Mensagem automática com saudação dinâmica
+  const mensagensAutomaticas = [
+    `${getGreeting()}! 😊 Seja bem-vindo à WhiwaSana. Me chamo Cristiano, seu assistente virtual. Como posso te ajudar hoje?`,
+  ];
 
   //🔥 1. Verificar se é texto e se está dentro dos 10 minutos:
 
@@ -174,62 +217,64 @@ const mensagensAutomaticas = [
 
   // ✅ Enviar mensagem
 
- 
+  const handleSendMessage = async () => {
+    if (!message.trim()) return;
 
-
-
-const handleSendMessage = async () => {
-  if (!message.trim()) return;
-
-  if (!user || !user.id) {
-    console.error("Usuário não autenticado.");
-    return;
-  }
-
-  try {
-      // Ref para o documento da conversa
-    const conversationRef = doc(db, "conversations", conversationId);
-
-     // Verifica se o documento existe
-    const conversationSnap = await getDoc(conversationRef);
-
-    if (!conversationSnap.exists()) {
-      await setDoc(conversationRef, {
-        // Cria o documento da conversa com info básica
-        createdAt: serverTimestamp(),
-        userId: user.id,
-        userName: user.name,
-      });
-
-        // Você pode adicionar outros dados que quiser aqui
+    if (!user || !user.id) {
+      console.error("Usuário não autenticado.");
+      return;
     }
 
+    try {
+      let currentConversationId = conversationId;
+      
+      // Se não tem conversationId, cria uma nova conversa
+      if (!currentConversationId) {
+        const newConversationRef = await addDoc(collection(db, "conversations"), {
+          userId: user.uid,
+          userName: user.displayName || user.email,
+          createdAt: serverTimestamp(),
+          welcomeSent: false
+        });
+        currentConversationId = newConversationRef.id;
+        console.log("Nova conversa criada:", currentConversationId);
+      }
+      
+      // Agora usa o currentConversationId
+      const conversationRef = doc(db, "conversations", currentConversationId);
 
-     // Agora adiciona a mensagem normalmente
-    await addDoc(collection(db, "conversations", conversationId, "messages"), {
-      text: message,
-      createdAt: serverTimestamp(),
-      userId: user.id,
-      userName: user.name,
-      type: isAdmin ? "incoming" : "outgoing",
-    });
+      // Verifica se a conversa existe
+      const conversationDoc = await getDoc(doc(db, "conversations", currentConversationId));
+      
+      if (!conversationDoc.exists()) {
+        console.error("Conversa não encontrada:", currentConversationId);
+        // Cria a conversa se não existir
+        await setDoc(doc(db, "conversations", currentConversationId), {
+          userId: user.uid,
+          userName: user.displayName || user.email,
+          createdAt: serverTimestamp(),
+          welcomeSent: false
+        });
+      }
 
-    setMessage("");
-    setEditMessageIndex(null);
-  } catch (error) {
-    console.error("Erro ao enviar mensagem:", error);
-  }
-};
+      // Agora adiciona a mensagem normalmente
+      await addDoc(
+        collection(db, "conversations", currentConversationId, "messages"),
+        {
+          text: message,
+          createdAt: serverTimestamp(),
+          userId: user.id,
+          userName: user.name,
+          type: isAdmin ? "incoming" : "outgoing",
+        }
+      );
 
-
-
-
-
-
-
-
-
-
+      setMessage("");
+      setEditMessageIndex(null);
+    } catch (error) {
+      console.error("Erro ao enviar mensagem:", error);
+    }
+  };
 
   const handleUpdateMessage = async () => {
     const msg = messages[editMessageIndex];
@@ -260,6 +305,32 @@ const handleSendMessage = async () => {
     }
   };
 
+
+  // Função para extrair o caminho do arquivo a partir da URL do Storage
+
+
+  function getStoragePathFromUrl(url) {
+    // Pega o trecho depois de '/o/' e antes do '?'
+    const path = decodeURIComponent(url.split('/o/')[1].split('?')[0]);
+    return path;
+  }
+
+ async function deleteMediaFromStorage(mediaUrl) {
+  if (!mediaUrl) return;
+
+  try {
+    const storage = getStorage();
+    const filePath = getStoragePathFromUrl(mediaUrl);
+    const fileRef = ref(storage, filePath);
+    await deleteObject(fileRef);
+    // Opcional: console.log('Arquivo removido com sucesso no Storage')
+
+  } catch (error) {
+    console.error('Erro ao deletar arquivo do Storage:', error);
+  }
+ }
+
+
   // ✅ Deletar mensagem
   const handleDeleteMessage = async (index) => {
     const msg = messages[index];
@@ -275,18 +346,31 @@ const handleSendMessage = async () => {
     await deleteDoc(
       doc(db, "conversations", conversationId, "messages", msg.id)
     );
+    if (msg.media) {
+      await deleteMediaFromStorage(msg.media);
+    }
   };
 
- 
-
   // ✅ Upload de mídia
+  const MAX_FILE_SIZE_MB = 10; // ou 20, se preferir permitir vídeos maiores
+  const ALLOWED_TYPES = ["image/jpeg", "image/png", "video/mp4"];
+
   const handleMediaClick = () => {
     const fileInput = document.createElement("input");
     fileInput.type = "file";
-    fileInput.accept = "image/*,video/*";
+    fileInput.accept = ALLOWED_TYPES.join(",");
     fileInput.onchange = (e) => {
-      if (e.target.files.length) {
-        setMediaFile(e.target.files[0]);
+      const file = e.target.files[0];
+      if (file) {
+        if (!ALLOWED_TYPES.includes(file.type)) {
+          alert("Tipo de arquivo não permitido!");
+          return;
+        }
+        if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+          alert("Arquivo muito grande! Máximo permitido: 10MB");
+          return;
+        }
+        setMediaFile(file);
         setIsModalOpen(true);
       }
     };
@@ -359,111 +443,135 @@ const handleSendMessage = async () => {
           ) : (
             <WhatsAppIcon sx={{ fontSize: "30px", color: "#fff" }} />
           )}
+
+
+          {unreadCount > 0 && (
+            <span 
+            style={{
+             
+              position: "absolute",
+              top: 2,
+              right: 2,
+              background: "red",
+              color: "#fff",
+              borderRadius: "50%",
+              width: 18,
+              height: 18,
+              fontSize: 12,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 10,
+            }}
+            >
+              {unreadCount}
+            </span>
+          )}
         </button>
 
-       {isChatOpen && (
-  <Box className="chatbot">
-    <Box
-      sx={{
-        background: "#33bf30",
-        padding: "16px 0",
-        textAlign: "center",
-        position: "relative",
-      }}
-    >
-      <h2 style={{ color: "#fff", fontSize: "1.4rem" }}>
-        Fale com a gente
-      </h2>
-    </Box>
+        {isChatOpen && (
+          <Box className="chatbot">
+            <Box
+              sx={{
+                background: "#33bf30",
+                padding: "16px 0",
+                textAlign: "center",
+                position: "relative",
+              }}
+            >
+              <h2 style={{ color: "#fff", fontSize: "1.4rem" }}>
+                Fale com a gente
+              </h2>
+            </Box>
 
-    <ul className="chatbox">
-      {messages.map((msg, index) => (
-        <li
-          key={msg.id || index}
-          className={`chat ${msg.type}`}
-          onClick={() => handleOpenActionModal(index)}
-          style={{
-            cursor: "pointer",
-            display: "flex",
-            width: "100%",
-            justifyContent:
-              msg.type === "incoming" ? "flex-start" : "flex-end",
-            backgroundColor:
-              msg.type === "outgoing" && msg.userId === user.id
-                ? "#d4edda"
-                : msg.type === "incoming"
-                ? "#e9ecef"
-                : "#fff",
-            padding: "2px",
-            borderRadius: "10px",
-            marginBottom: "4px",
-          }}
-        >
-          {msg.type === "incoming" && (
-            <WhatshotIcon sx={{ marginRight: 0 }} />
-          )}
+            <ul className="chatbox">
+              {messages.map((msg, index) => (
+                <li
+                  key={msg.id || index}
+                  className={`chat ${msg.type}`}
+                  onClick={() => handleOpenActionModal(index)}
+                  style={{
+                    cursor: "pointer",
+                    display: "flex",
+                    width: "100%",
+                    justifyContent:
+                      msg.type === "incoming" ? "flex-start" : "flex-end",
+                    backgroundColor:
+                      msg.type === "incoming",
+                      bgcolor:'#fff',
+                       
+                    padding: "2px",
+                    borderRadius: "10px",
+                    marginBottom: "4px",
+                  }}
+                >
+                  {msg.type === "incoming" && (
+                    <WhatshotIcon sx={{ marginRight: 0, color:'#1a2428' }} />
+                  )}
 
-          {msg.mediaType === "image" ? (
-            <img
-              src={msg.media}
-              alt="Arquivo enviado"
-              style={{ maxWidth: "200px", margin: "5px" }}
-            />
-          ) : msg.mediaType === "video" ? (
-            <video
-              controls
-              src={msg.media}
-              style={{ maxWidth: "200px", margin: "5px" }}
-            />
-          ) : (
-            <p style={{ margin: 0 }}>{msg.text}</p>
-          )}
-        </li>
-      ))}
-      <div ref={messagesEndRef} />
-    </ul>
+                  {msg.mediaType === "image" ? (
+                    <img
+                      src={msg.media}
+                      alt="Arquivo enviado"
+                      style={{ maxWidth: "200px", margin: "5px", borderRadius: "8px" }}
+                    />
+                  ) : msg.mediaType === "video" ? (
+                    <video
+                      controls
+                      src={msg.media}
+                      style={{ maxWidth: "300px", margin: "5px" }}
+                    />
+                  ) : (
+                    <p style={{ margin: 0, fontSize: "14px" }}>{msg.text}</p>
+                  )}
+                </li>
+              ))}
+              <div  ref={messagesEndRef} />
+            </ul>
 
-   <div className="chat-input">
-  <AddAPhotoIcon
-    onClick={handleMediaClick}
-    sx={{
-      color: "#3cb815",
-      fontSize: "1.4rem",
-      cursor: "pointer",
-      padding: "4px",
-      borderRadius: "50%",
-      backgroundColor: "#fff",
-      boxShadow: "0 0 5px #3cb815",
-      "&:hover": { boxShadow: "0 0 10px #3cb815" },
-    }}
-  />
-  <textarea
-    className="TheNewtextarea"
-    placeholder="Enviar Mensagem..."
-    value={message}
-    onChange={(e) => setMessage(e.target.value)}
-    required
-  />
-  <Button
-    onClick={editMessageIndex !== null ? handleUpdateMessage : handleSendMessage}
-    disabled={message.trim() === ""}
-    sx={{
-      color: message.trim() === "" ? "#ccc" : "#3cb815",
-      cursor: message.trim() === "" ? "not-allowed" : "pointer",
-      minWidth: '40px',  // opcional, para tamanho fixo
-    }}
-  >
-    {editMessageIndex !== null ? (
-      <EditIcon sx={{ fontSize: "1.4rem" }} />
-    ) : (
-      <SendIcon sx={{ fontSize: "1.4rem" }} />
-    )}
-  </Button>
-</div>
-
-  </Box>
-)}
-
+            <div className="chat-input">
+              <AddAPhotoIcon
+                onClick={handleMediaClick}
+                sx={{
+                  color: "#3cb815",
+                  fontSize: "1.4rem",
+                  cursor: "pointer",
+                  padding: "4px",
+                  borderRadius: "50%",
+                  backgroundColor: "#fff",
+                  boxShadow: "0 0 5px #3cb815",
+                  "&:hover": { boxShadow: "0 0 10px #3cb815" },
+                }}
+              />
+              <textarea
+                className="TheNewtextarea"
+                placeholder="Enviar Mensagem..."
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                required
+              />
+              <Button
+                onClick={
+                  editMessageIndex !== null
+                    ? handleUpdateMessage
+                    : handleSendMessage
+                }
+                disabled={message.trim() === ""}
+                sx={{
+                  color: message.trim() === "" ? "#ccc" : "#3cb815",
+                  cursor: message.trim() === "" ? "not-allowed" : "pointer",
+                  minWidth: "40px", // opcional, para tamanho fixo
+                }}
+              >
+                {editMessageIndex !== null ? (
+                  <EditIcon sx={{ fontSize: "1.4rem" }} />
+                ) : (
+                  <SendIcon sx={{ fontSize: "1.4rem" }} />
+                )}
+              </Button>
+            </div>
+          </Box>
+        )}
 
         {/* Modal de mídia */}
         <Modal open={isModalOpen} onClose={handleCloseModal}>
