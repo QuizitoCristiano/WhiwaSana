@@ -14,6 +14,7 @@ export const MainLayout = () => {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
+      
       }}
     >
       <MyHeader />

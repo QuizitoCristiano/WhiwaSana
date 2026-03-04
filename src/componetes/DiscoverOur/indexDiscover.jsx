@@ -4,6 +4,7 @@ import headphonesData from "./DiscoverData";
 import { Box, Button, Stack, Typography } from "@mui/material";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+import { motion } from "framer-motion";
 
 const DiscoverOurHeadphones = ({ adicionarNovoItem }) => {
   return (
@@ -13,6 +14,8 @@ const DiscoverOurHeadphones = ({ adicionarNovoItem }) => {
         textAlign: "center",
         marginTop: "5rem",
       }}
+
+      
     >
       <Stack
         sx={{
@@ -128,10 +131,16 @@ const DiscoverOurHeadphones = ({ adicionarNovoItem }) => {
           },
         })}
       >
-        {headphonesData.map((headphone) => (
-          <Box key={headphone.id} sx={{ width: "98%" }}>
-            <CardItem item={headphone} />
-          </Box>
+        {headphonesData.map((headphone, idx) => (
+          <motion.div
+          key={headphone.id}
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: idx * 0.10 }}
+          viewport={{ once: false, amount: 0.2 }} // anima toda vez que entrar na tela
+        >
+          <CardItem item={headphone} />
+        </motion.div>
         ))}
       </Stack>
     </Stack>

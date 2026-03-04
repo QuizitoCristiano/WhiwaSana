@@ -3,8 +3,16 @@ import { Box, Button, Stack, Typography } from "@mui/material";
 
 import newFoneOne from "../../imagens/relogioOferta6.png";
 
+import { motion } from "framer-motion";
 const ElectronicsItemOne = () => {
   return (
+
+    <motion.div
+    initial={{ opacity: 0, y: 40 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.7, ease: "easeOut" }}
+    viewport={{ once: true, amount: 0.2 }}
+  >
     <Stack
       sx={(theme) => ({
         background:
@@ -190,6 +198,7 @@ const ElectronicsItemOne = () => {
         </Box>
       </Stack>
     </Stack>
+    </motion.div>
   );
 };
 

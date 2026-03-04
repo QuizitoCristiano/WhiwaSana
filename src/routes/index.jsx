@@ -21,6 +21,7 @@ import AdminRoute from "../admin/AdminRoute";
 import ChatWhatsApp from "../chatWats/zap";
 import ChatAdminDashboard from "../chatWats/AdminChatDashboard";
 import BagMarket from "../marketBag/marketbag";
+import DiscoverOurHeadphones from "../componetes/DiscoverOur/indexDiscover";
 
 export const MainRoutes = () => {
   const { isLoggedIn } = useAuth();
@@ -39,6 +40,7 @@ export const MainRoutes = () => {
         <Route path="/AlmadaWhiwaSana" element={<AlmadaWhiwaSana />} />
         <Route path="/PromocoesPage" element={<PromocoesPage />} />
         <Route path="/FormularioEntrega" element={<FormularioEntrega />} />
+        <Route path="/DiscoverOurHeadphones" element={<DiscoverOurHeadphones />} />
       
       </Route>
 

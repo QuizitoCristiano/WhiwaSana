@@ -72,6 +72,7 @@ const GlobalProvider = ({ children }) => {
   // Total de itens no carrinho
   const totalItensCarrinho = carinho.length;
 
+  
   // Adiciona ou incrementa item nos favoritos
   const adicionarNovosItenfavoritos = (produto) => {
     if (!produto) return;

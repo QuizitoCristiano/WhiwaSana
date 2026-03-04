@@ -20,7 +20,7 @@
     "bootstrap": "^5.3.6",
     "dayjs": "^1.11.13",
     "firebase": "^11.9.0",
-    "framer-motion": "^12.6.2",
+    "framer-motion": "^12.23.9",
     "jsbarcode": "^3.11.6",
     "lottie-react": "^2.4.1",
     "react": "^19.0.0",

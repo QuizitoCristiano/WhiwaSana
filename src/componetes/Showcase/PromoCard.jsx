@@ -16,6 +16,7 @@ import relogioOferta6 from "../../imagens/relogioOferta6.png";
 import relogioAzul from "../../imagens/relogioAzul.png";
 import { GlobalContext } from "../../contexto_global/useContextGlobal";
 
+
 const ElectronicsItem = [
   {
     id: "1",
@@ -75,6 +76,7 @@ const PromoCard = () => {
   } = useContext(GlobalContext);
   return (
     <>
+    
       <Stack
         sx={{
           width: "100%",
@@ -341,6 +343,8 @@ const PromoCard = () => {
           </Stack>
         </Stack>
       </Stack>
+
+
     </>
   );
 };

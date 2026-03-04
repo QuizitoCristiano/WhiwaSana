@@ -87,7 +87,7 @@ const RecuperarSeanha = () => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-
+          borderRadius: '1px',
           padding: "10px",
           background:
             "linear-gradient(34deg, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 1) 50%)",

@@ -5,18 +5,19 @@ import { getAuth } from "firebase/auth";
 import { getStorage } from "firebase/storage";
 
 
-
-
+// Configuração do Firebase usando variáveis de ambiente (Vite)
 const firebaseConfig = {
-  apiKey: "AIzaSyAz3WhuZB22TPRjP5hUp2YonLPpS4oipzU",
-  authDomain: "pizzaria-7b611.firebaseapp.com",
-  databaseURL: "https://pizzaria-7b611-default-rtdb.firebaseio.com",
-  projectId: "pizzaria-7b611",
-  storageBucket: "pizzaria-7b611.appspot.com",
-  messagingSenderId: "691116080485",
-  appId: "1:691116080485:web:04986bfa28fde3cae7758c",
-  measurementId: "G-1GNS4QK9Y5"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
+
+export default firebaseConfig;
 
 const app = initializeApp(firebaseConfig);
 

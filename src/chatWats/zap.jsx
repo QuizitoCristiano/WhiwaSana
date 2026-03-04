@@ -352,7 +352,7 @@ const ChatWhatsApp = ({ selectedClientId }) => {
   };
 
   // ✅ Upload de mídia
-  const MAX_FILE_SIZE_MB = 10; // ou 20, se preferir permitir vídeos maiores
+  const MAX_FILE_SIZE_MB = 20; // ou 20, se preferir permitir vídeos maiores
   const ALLOWED_TYPES = ["image/jpeg", "image/png", "video/mp4"];
 
   const handleMediaClick = () => {

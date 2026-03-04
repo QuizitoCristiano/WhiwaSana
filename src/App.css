@@ -3,16 +3,11 @@
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
-
 }
 
 body {
-   background:
-            "linear-gradient(34deg, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 1) 50%)",
-
-       
+  background: "linear-gradient(34deg, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 1) 50%)";
 }
-
 
 .logo {
   height: 6em;
@@ -49,6 +44,3 @@ body {
 .read-the-docs {
   color: #888;
 }
-
-
-

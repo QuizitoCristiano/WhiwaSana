@@ -227,7 +227,7 @@ export const MyHome = () => {
         <ProductDetails />
         <ContactForm />
 
-        <ChatAdminDashboard />
+        {/* <ChatAdminDashboard /> */}
 
         <AdminChat />
         <ChatWhatsApp />

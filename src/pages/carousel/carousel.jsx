@@ -20,6 +20,7 @@ import { cardData } from "./cardData";
 import { NewOrderVendas } from "./cardVendas/Myorder";
 import { DataCardVendas } from "./cardVendas/cardeOrderVendas";
 import { StyleClientNweLib } from "../../lib/newStylesLib";
+import { Link, useNavigate } from "react-router-dom";
 
 export const Cardemep = ({ title, text, Strong }) => {
   return (
@@ -88,6 +89,14 @@ const myArrayCard = [
 
 export const ControlledCarousel = () => {
   const [index, setIndex] = useState(0);
+
+  // Será que estou fazendo certo?
+  const navigate = useNavigate();
+
+  const handleNavigate = () => {
+    navigate("/DiscoverOurHeadphones");
+  };
+
 
   const handleSelect = (selectedIndex, e) => {
     setIndex(selectedIndex);
@@ -184,7 +193,9 @@ export const ControlledCarousel = () => {
                   border: "2px solid #33bf30",
                 },
               }}
+              onClick={() => handleNavigate()}
             >
+            
               <ShoppingBagIcon />
               Compre já
             </Button>
